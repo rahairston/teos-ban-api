@@ -1,0 +1,3 @@
+ban:
+    teo:
+        redirect_uris: "http://localhost:3000"
