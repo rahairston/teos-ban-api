@@ -1,8 +1,9 @@
 package com.teosgame.ban.banapi.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,13 +15,23 @@ import com.teosgame.ban.banapi.exception.BaseException;
 
 @ControllerAdvice
 public class ExceptionController extends ResponseEntityExceptionHandler {
-    @ExceptionHandler(BaseException.class)
 
+    Logger logger = LoggerFactory.getLogger(ExceptionController.class);
+    
+    @ExceptionHandler(BaseException.class)
     public final ResponseEntity<ErrorResponse> handleBaseException
             (BaseException ex, WebRequest request) {
-        List<String> details = new ArrayList<>();
-        details.add(ex.getLocalizedMessage());
-        ErrorResponse error = new ErrorResponse(ex.getMessage(), details);
+        String message = ex.getMessage();
+        JSONObject responseBody = null;
+        if (ex.getResponseBody() != null) {
+            try {
+                responseBody = new JSONObject(ex.getResponseBody().trim());
+                message += ": " + responseBody.getString("message");
+            } catch (JSONException err){
+                logger.error("Error Parsing JSON for responseBody or finding message: " + ex.getResponseBody());
+            }
+        }
+        ErrorResponse error = new ErrorResponse(message, ex.getCode().value());
         return new ResponseEntity<>(error, ex.getCode());
     }
 }

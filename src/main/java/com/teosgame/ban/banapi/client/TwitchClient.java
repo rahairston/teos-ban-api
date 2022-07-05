@@ -71,8 +71,8 @@ public class TwitchClient {
                 TwitchTokenResponse.class);
             return response.getBody();
         } catch (HttpClientErrorException | HttpServerErrorException e) {
-            logger.error("Error Fetching Twitch Access Token");
-            throw new TwitchResponseException(e.getLocalizedMessage(), e.getStatusCode());
+            logger.error("Error Fetching Twitch Access Token " + e.getLocalizedMessage().trim());
+            throw new TwitchResponseException("Error Fetching Twitch Access Token", e.getResponseBodyAsString(), e.getStatusCode());
         }
     }
 
@@ -99,7 +99,7 @@ public class TwitchClient {
             return response.getBody();
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             logger.error("Error Fetching Twitch Refresh Token");
-            throw new TwitchResponseException(e.getLocalizedMessage(), e.getStatusCode());
+            throw new TwitchResponseException("Error Fetching Twitch Refresh Token", e.getResponseBodyAsString(), e.getStatusCode());
         }
     }
 

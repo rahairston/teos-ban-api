@@ -22,9 +22,15 @@ public class AuthService {
 
     Logger logger = LoggerFactory.getLogger(AuthService.class);
 
-    public TokenResponse getTwitchToken(String authCode) 
+    public TokenResponse getTwitchToken(String authCode, String refresh) 
         throws TwitchResponseException, UnknownException, NotFoundException, UserUnverifiedException {
-        TwitchTokenResponse token = twitchClient.getTwitchAccessToken(authCode);
+        TwitchTokenResponse token = null;
+        if (authCode != null) {
+            token = twitchClient.getTwitchAccessToken(authCode);
+        } else {
+            token = twitchClient.refreshTwitchAccessToken(refresh);
+        }
+
         TwitchUserInfo userInfo = twitchClient.getUserInfo(token.getAccess_token());
 
         if (userInfo.getEmail() == null) {
