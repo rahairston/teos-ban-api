@@ -19,9 +19,9 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.teosgame.ban.banapi.client.model.request.TwitchTokenRequest;
-import com.teosgame.ban.banapi.client.model.response.TwitchUserInfoWrapper;
 import com.teosgame.ban.banapi.client.model.response.TwitchTokenResponse;
 import com.teosgame.ban.banapi.client.model.response.TwitchUserInfo;
+import com.teosgame.ban.banapi.config.TwitchConfig;
 import com.teosgame.ban.banapi.enums.GrantType;
 import com.teosgame.ban.banapi.exception.NotFoundException;
 import com.teosgame.ban.banapi.exception.TwitchResponseException;
@@ -35,17 +35,9 @@ import lombok.RequiredArgsConstructor;
 public class TwitchClient {
     private final RestTemplate restTemplate;
     private final Credential credential;
+    private final TwitchConfig config;
 
     Logger logger = LoggerFactory.getLogger(TwitchClient.class);
-
-    @Value("${ban.teo.redirect_uris:}")
-    private String redirectUri;
-
-    @Value("${twitch.url.auth:}")
-    private String tokenUrl;
-
-    @Value("${twitch.url.userinfo:}")
-    private String userInfoUrl;
 
     private static ObjectMapper objectMapper = new ObjectMapper();
 
@@ -57,7 +49,7 @@ public class TwitchClient {
             null, 
             authCode,
             GrantType.AUTHORIZATION_CODE.toString(), 
-            redirectUri
+            config.getRedirectUri()
         );
 
         HttpHeaders headers = new HttpHeaders();
@@ -66,7 +58,7 @@ public class TwitchClient {
             = new HttpEntity<MultiValueMap<String, String>>(convertToFormMap(body), headers);
 
         try {
-            ResponseEntity<TwitchTokenResponse> response = restTemplate.postForEntity(tokenUrl,
+            ResponseEntity<TwitchTokenResponse> response = restTemplate.postForEntity(config.getTokenUrl(),
                 request, 
                 TwitchTokenResponse.class);
             return response.getBody();
@@ -84,7 +76,7 @@ public class TwitchClient {
             refreshToken, 
             null,
             GrantType.REFRESH_TOKEN.toString(), 
-            redirectUri
+            config.getRedirectUri()
         );
 
         HttpHeaders headers = new HttpHeaders();
@@ -93,7 +85,7 @@ public class TwitchClient {
             = new HttpEntity<MultiValueMap<String, String>>(convertToFormMap(body), headers);
 
         try {
-            ResponseEntity<TwitchTokenResponse> response = restTemplate.postForEntity(tokenUrl,
+            ResponseEntity<TwitchTokenResponse> response = restTemplate.postForEntity(config.getTokenUrl(),
                 request, 
                 TwitchTokenResponse.class);
             return response.getBody();
@@ -107,25 +99,15 @@ public class TwitchClient {
         throws TwitchResponseException, UnknownException, NotFoundException {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(accessToken);
-        headers.add("Client-Id", credential.getClientId());
         HttpEntity<Void> request = new HttpEntity<Void>(headers);
 
         try {
-            ResponseEntity<TwitchUserInfoWrapper> response = restTemplate.exchange(userInfoUrl,
+            ResponseEntity<TwitchUserInfo> response = restTemplate.exchange(config.getUserInfoUrl(),
                 HttpMethod.GET, 
                 request, 
-                TwitchUserInfoWrapper.class);
-            if (response.getBody() == null || response.getBody().getData() == null) {
-                logger.error("Twitch UserInfo Endpoint responded with null data");
-                throw new UnknownException("Twitch UserInfo Endpoint responded with null data");
-            }
+                TwitchUserInfo.class);
 
-            if (response.getBody().getData().length == 0) {
-                logger.error("Twitch UserInfo Endpoint responded empty array. User not found?");
-                throw new NotFoundException("UserInfo could not be found.");
-            }
-
-            return response.getBody().getData()[0];
+            return response.getBody();
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             logger.error("Error Fetching Twitch UserInfo");
             throw new TwitchResponseException(e.getLocalizedMessage(), e.getStatusCode());

@@ -10,4 +10,6 @@ server:
 twitch:
     url:
         auth: "https://id.twitch.tv/oauth2/token"
-        userinfo: "https://api.twitch.tv/helix/users"
+        userinfo: "https://id.twitch.tv/oauth2/userinfo"
+        keys: "https://id.twitch.tv/oauth2/keys"
+        issuer: "https://id.twitch.tv/oauth2"

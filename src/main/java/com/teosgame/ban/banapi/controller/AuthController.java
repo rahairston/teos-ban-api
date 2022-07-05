@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.teosgame.ban.banapi.exception.BadRequestException;
+import com.teosgame.ban.banapi.exception.InvalidJwtException;
 import com.teosgame.ban.banapi.exception.NotFoundException;
 import com.teosgame.ban.banapi.exception.TwitchResponseException;
 import com.teosgame.ban.banapi.exception.UnknownException;
@@ -23,8 +24,10 @@ public class AuthController {
     private AuthService authService;
     
     @GetMapping(value = "/token", produces = "application/json")
-    public ResponseEntity<TokenResponse> getAuthToken(@RequestParam(required = false) String code, @RequestParam(required = false) String refresh) 
-        throws TwitchResponseException, UnknownException, NotFoundException, UserUnverifiedException, BadRequestException {
+    public ResponseEntity<TokenResponse> getAuthToken(@RequestParam(required = false) String code, 
+    @RequestParam(required = false) String refresh, @RequestParam String nonce) 
+        throws TwitchResponseException, UnknownException, NotFoundException,
+                UserUnverifiedException, BadRequestException, InvalidJwtException {
         if (code == null && refresh == null) {
             throw new BadRequestException("One request parameter of \"code\" or \"refresh\" is required");
         }
@@ -33,6 +36,6 @@ public class AuthController {
             throw new BadRequestException("Only One request parameter of \"code\" or \"refresh\" is required");
         }
 
-        return ResponseEntity.ok(authService.getTwitchToken(code, refresh));
+        return ResponseEntity.ok(authService.getTwitchToken(code, refresh, nonce));
     }
 }

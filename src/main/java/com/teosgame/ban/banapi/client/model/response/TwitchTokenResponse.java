@@ -12,4 +12,6 @@ public class TwitchTokenResponse {
     String access_token;
     int expires_in;
     String refresh_token;
+    String id_token;
+    String nonce;
 }
