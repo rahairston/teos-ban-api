@@ -2,3 +2,5 @@ ban:
     teo:
         redirect_uris: "http://localhost:3000"
         allowed_origins: "http://localhost:3000"
+        redis:
+            host: localhost

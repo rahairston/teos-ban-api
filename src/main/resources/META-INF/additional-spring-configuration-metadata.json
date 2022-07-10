@@ -43,5 +43,10 @@
     "name": "ban.teo.redirect_uris",
     "type": "java.lang.String",
     "description": "A description for 'ban.teo.redirect_uris'"
+  },
+  {
+    "name": "ban.teo.redis.host",
+    "type": "java.lang.String",
+    "description": "A description for 'ban.teo.redis.host'"
   }
 ]}
