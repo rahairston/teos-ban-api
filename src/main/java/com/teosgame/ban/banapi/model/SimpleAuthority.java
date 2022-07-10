@@ -13,4 +13,20 @@ public class SimpleAuthority implements GrantedAuthority {
     }
 
     private String authority;
+
+    public static SimpleAuthority SimpleUser() {
+        return new SimpleAuthority(RoleType.USER);
+    }
+
+    public static SimpleAuthority SimpleTeo() {
+        return new SimpleAuthority(RoleType.TEO);
+    }
+
+    public static SimpleAuthority SimpleAdmin() {
+        return new SimpleAuthority(RoleType.ADMIN);
+    }
+
+    public static SimpleAuthority SimpleDev() {
+        return new SimpleAuthority(RoleType.DEVELOPER);
+    }
 }

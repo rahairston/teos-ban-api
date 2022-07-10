@@ -1,6 +1,5 @@
 package com.teosgame.ban.banapi.util;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -13,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.teosgame.ban.banapi.client.TwitchClient;
 import com.teosgame.ban.banapi.client.model.response.TwitchUserInfo;
-import com.teosgame.ban.banapi.enums.RoleType;
+import com.teosgame.ban.banapi.config.RoleConfig;
 import com.teosgame.ban.banapi.model.SimpleAuthority;
 import com.teosgame.ban.banapi.model.UserAuth;
 import com.teosgame.ban.banapi.exception.InvalidTokenException;
@@ -27,6 +26,7 @@ public class TokenValidator {
     public static final String BEARER = "Bearer ";
 
     private final TwitchClient client;
+    private final RoleConfig config;
 
     Logger logger = LoggerFactory.getLogger(JwtValidator.class);
 
@@ -35,7 +35,7 @@ public class TokenValidator {
             String tokenValue = subStringBearer(authorizationHeader);
             TwitchUserInfo userInfo = client.getUserInfo(tokenValue);
             List<SimpleAuthority> authorities = getUserAuthorities(userInfo.getPreferred_username());
-            
+
             return new UserAuth(authorities, tokenValue, sessionId, userInfo, true);
         } catch (InvalidTokenException e) {
             logger.error(e.getMessage());
@@ -55,9 +55,6 @@ public class TokenValidator {
     }
 
     private List<SimpleAuthority> getUserAuthorities(String username) {
-        List<SimpleAuthority> authorities = new ArrayList<>();
-        // check against list or something
-        authorities.add(new SimpleAuthority(RoleType.USER));
-        return authorities;
+        return config.getUserRoles(username.toLowerCase());
     }
 }

@@ -15,6 +15,9 @@ import org.springframework.security.authentication.AuthenticationCredentialsNotF
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
 
 import com.teosgame.ban.banapi.util.TokenValidator;
 
@@ -23,9 +26,16 @@ public class AccessTokenFilter extends AbstractAuthenticationProcessingFilter {
 
     Logger logger = LoggerFactory.getLogger(AccessTokenFilter.class);
 
+    private static final NegatedRequestMatcher matcher = new NegatedRequestMatcher(
+            new OrRequestMatcher(                                                                                     
+            new AntPathRequestMatcher("/auth/**"),                                                                                   
+            new AntPathRequestMatcher("/actuator/health"),
+            new AntPathRequestMatcher("/error")                                                                          
+        )
+    );
+
     public AccessTokenFilter(TokenValidator validator, AuthenticationManager authenticationManager) {
-        // TODO: Don't forget to change this part
-        super("/actuator/health");
+        super(matcher);
         setAuthenticationManager(authenticationManager);
         this.validator = validator;
     }

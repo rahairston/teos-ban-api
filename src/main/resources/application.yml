@@ -13,3 +13,13 @@ twitch:
         userinfo: "https://id.twitch.tv/oauth2/userinfo"
         keys: "https://id.twitch.tv/oauth2/keys"
         issuer: "https://id.twitch.tv/oauth2"
+
+ban:
+    teo:
+        roles:
+            TEO: teosgame
+            ADMIN:
+            - hobocutie
+            - markvs
+            DEVELOPER:
+            - rushthetoastyboi

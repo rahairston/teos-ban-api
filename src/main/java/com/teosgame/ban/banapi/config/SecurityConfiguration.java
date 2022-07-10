@@ -29,7 +29,8 @@ public class SecurityConfiguration {
                         authenticationService),
     BasicAuthenticationFilter.class)
             .authorizeHttpRequests()
-            .antMatchers("/actuator/**", "/auth/**").permitAll()
+            .antMatchers( "/actuator/health", "/auth/**", "/error").permitAll()
+            .antMatchers("/actuator/**").hasRole("DEVELOPER")
             .anyRequest().authenticated()
             .and()
             .build();
