@@ -24,6 +24,7 @@ public class AccessTokenFilter extends AbstractAuthenticationProcessingFilter {
     Logger logger = LoggerFactory.getLogger(AccessTokenFilter.class);
 
     public AccessTokenFilter(TokenValidator validator, AuthenticationManager authenticationManager) {
+        // TODO: Don't forget to change this part
         super("/actuator/health");
         setAuthenticationManager(authenticationManager);
         this.validator = validator;
