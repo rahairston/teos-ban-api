@@ -4,7 +4,6 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -23,9 +22,7 @@ import com.teosgame.ban.banapi.client.model.response.TwitchTokenResponse;
 import com.teosgame.ban.banapi.client.model.response.TwitchUserInfo;
 import com.teosgame.ban.banapi.config.TwitchConfig;
 import com.teosgame.ban.banapi.enums.GrantType;
-import com.teosgame.ban.banapi.exception.NotFoundException;
 import com.teosgame.ban.banapi.exception.TwitchResponseException;
-import com.teosgame.ban.banapi.exception.UnknownException;
 import com.teosgame.ban.banapi.util.Credential;
 
 import lombok.RequiredArgsConstructor;
@@ -96,7 +93,7 @@ public class TwitchClient {
     }
 
     public TwitchUserInfo getUserInfo(String accessToken) 
-        throws TwitchResponseException, UnknownException, NotFoundException {
+        throws TwitchResponseException {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(accessToken);
         HttpEntity<Void> request = new HttpEntity<Void>(headers);

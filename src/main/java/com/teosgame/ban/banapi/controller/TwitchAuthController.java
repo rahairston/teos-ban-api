@@ -14,14 +14,14 @@ import com.teosgame.ban.banapi.exception.TwitchResponseException;
 import com.teosgame.ban.banapi.exception.UnknownException;
 import com.teosgame.ban.banapi.exception.UserUnverifiedException;
 import com.teosgame.ban.banapi.model.response.TokenResponse;
-import com.teosgame.ban.banapi.service.AuthService;
+import com.teosgame.ban.banapi.service.TwitchAuthService;
 
 @RestController
 @RequestMapping("/auth")
-public class AuthController {
+public class TwitchAuthController {
 
     @Autowired
-    private AuthService authService;
+    private TwitchAuthService authService;
     
     @GetMapping(value = "/token", produces = "application/json")
     public ResponseEntity<TokenResponse> getAuthToken(@RequestParam(required = false) String code, 

@@ -1,8 +1,12 @@
 package com.teosgame.ban.banapi.service;
 
+import javax.servlet.http.HttpSession;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.teosgame.ban.banapi.client.TwitchClient;
 import com.teosgame.ban.banapi.client.model.response.TwitchTokenResponse;
@@ -19,11 +23,11 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class AuthService {
+public class TwitchAuthService {
     private final TwitchClient twitchClient;
     private final JwtValidator jwtValidator;
 
-    Logger logger = LoggerFactory.getLogger(AuthService.class);
+    Logger logger = LoggerFactory.getLogger(TwitchAuthService.class);
 
     public TokenResponse getTwitchToken(String authCode, String refresh, String nonce) 
         throws TwitchResponseException, UnknownException, 
@@ -37,7 +41,7 @@ public class AuthService {
         }
 
         if (!token.getNonce().equals(nonce)) {
-
+            throw new InvalidJwtException("Nonce is not equlal");
         }
 
         TwitchUserInfo userInfo = TwitchUserInfo.fromClaims(jwtValidator.validateAndParse(token.getId_token()));
@@ -45,6 +49,12 @@ public class AuthService {
         if (!userInfo.isEmail_verified()) {
             throw new UserUnverifiedException("User has not verified their email address.");
         }
+
+        ServletRequestAttributes attr = (ServletRequestAttributes) 
+        RequestContextHolder.currentRequestAttributes();
+        HttpSession session = attr.getRequest().getSession(true);
+
+        logger.info("Sesh on Token: {}", session.getId());
 
         return TokenResponse.builder()
             .accessToken(token.getAccess_token())

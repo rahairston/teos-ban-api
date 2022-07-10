@@ -11,7 +11,6 @@ public class TokenResponse {
     String email;
     String displayName;
     String profileImageUrl;
-    String sessionId;
     String accessToken;
     String refreshToken;
     int expiresIn;
