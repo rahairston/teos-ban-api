@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,10 +28,11 @@ public class AccessTokenFilter extends AbstractAuthenticationProcessingFilter {
     Logger logger = LoggerFactory.getLogger(AccessTokenFilter.class);
 
     private static final NegatedRequestMatcher matcher = new NegatedRequestMatcher(
-            new OrRequestMatcher(                                                                                     
+        new OrRequestMatcher(                                                                                     
             new AntPathRequestMatcher("/auth/**"),                                                                                   
             new AntPathRequestMatcher("/actuator/health"),
-            new AntPathRequestMatcher("/error")                                                                          
+            new AntPathRequestMatcher("/error"),
+            new AntPathRequestMatcher("/**", HttpMethod.OPTIONS.toString())                                                                  
         )
     );
 

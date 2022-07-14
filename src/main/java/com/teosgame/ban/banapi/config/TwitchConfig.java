@@ -18,6 +18,9 @@ public class TwitchConfig {
     @Value("${twitch.url.userinfo:}")
     private String userInfoUrl;
 
+    @Value("${twitch.url.validate:}")
+    private String validate;
+
     @Value("${twitch.url.keys:}")
     private String keys;
 

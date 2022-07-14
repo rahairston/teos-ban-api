@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import com.teosgame.ban.banapi.client.RedisClient;
 import com.teosgame.ban.banapi.client.TwitchClient;
 import com.teosgame.ban.banapi.client.model.response.TwitchTokenResponse;
 import com.teosgame.ban.banapi.client.model.response.TwitchUserInfo;
@@ -26,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 public class TwitchAuthService {
     private final TwitchClient twitchClient;
     private final JwtValidator jwtValidator;
+    private final RedisClient redisClient;
 
     Logger logger = LoggerFactory.getLogger(TwitchAuthService.class);
 
@@ -54,7 +56,7 @@ public class TwitchAuthService {
         RequestContextHolder.currentRequestAttributes();
         HttpSession session = attr.getRequest().getSession(true);
 
-        logger.info("Sesh on Token: {}", session.getId());
+        redisClient.setValue(userInfo.getPreferred_username(), session.getId());
 
         return TokenResponse.builder()
             .accessToken(token.getAccess_token())

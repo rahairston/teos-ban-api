@@ -36,7 +36,7 @@ public class TokenValidator {
             TwitchUserInfo userInfo = client.getUserInfo(tokenValue);
             List<SimpleAuthority> authorities = getUserAuthorities(userInfo.getPreferred_username());
 
-            return new UserAuth(authorities, tokenValue, sessionId, userInfo, true);
+            return new UserAuth(authorities, tokenValue, sessionId, userInfo.getPreferred_username(), true);
         } catch (InvalidTokenException e) {
             logger.error(e.getMessage());
             throw new AuthenticationCredentialsNotFoundException(e.getMessage());

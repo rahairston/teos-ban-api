@@ -1,6 +1,9 @@
 spring:
     profiles:
         active: dev
+    cache:
+        type: redis
+        port: 6379
 
 server:
     port: 8080

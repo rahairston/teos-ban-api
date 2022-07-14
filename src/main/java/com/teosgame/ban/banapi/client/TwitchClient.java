@@ -111,6 +111,23 @@ public class TwitchClient {
         }
     }
 
+    public void validateToken(String accessToken) 
+        throws TwitchResponseException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(accessToken);
+        HttpEntity<Void> request = new HttpEntity<Void>(headers);
+
+        try { // will Error if invalid
+            restTemplate.exchange(config.getValidate(),
+                HttpMethod.GET, 
+                request, 
+                Void.class);
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            logger.error("Error Fetching Twitch UserInfo");
+            throw new TwitchResponseException(e.getLocalizedMessage(), e.getStatusCode());
+        }
+    }
+
     private MultiValueMap<String, String> convertToFormMap(Object o) {
         Map<String, String> converted = objectMapper.convertValue(o, Map.class);
         MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<String, String>();
