@@ -1,7 +1,6 @@
 package com.teosgame.ban.banapi.enums;
 
 public enum RoleType {
-    TEO("ROLE_TEO"),
     ADMIN("ROLE_ADMIN"),
     DEVELOPER("ROLE_DEVELOPER"),
     USER("ROLE_USER");

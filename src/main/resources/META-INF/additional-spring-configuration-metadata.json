@@ -5,11 +5,6 @@
     "description": "A description for 'ban.teo.roles.DEVELOPER'"
   },
   {
-    "name": "ban.teo.roles.TEO",
-    "type": "java.util.List<java.lang.String>",
-    "description": "A description for 'ban.teo.roles.TEO'"
-  },
-  {
     "name": "ban.teo.roles.ADMIN",
     "type": "java.util.List<java.lang.String>",
     "description": "A description for 'ban.teo.roles.ADMIN'"
@@ -58,5 +53,10 @@
     "name": "spring.cache.port",
     "type": "java.lang.String",
     "description": "A description for 'spring.cache.port'"
+  },
+  {
+    "name": "twitch.url.validate",
+    "type": "java.lang.String",
+    "description": "A description for 'twitch.url.validate'"
   }
 ]}

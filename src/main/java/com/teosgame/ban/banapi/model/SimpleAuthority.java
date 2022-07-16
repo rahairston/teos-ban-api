@@ -18,10 +18,6 @@ public class SimpleAuthority implements GrantedAuthority {
         return new SimpleAuthority(RoleType.USER);
     }
 
-    public static SimpleAuthority SimpleTeo() {
-        return new SimpleAuthority(RoleType.TEO);
-    }
-
     public static SimpleAuthority SimpleAdmin() {
         return new SimpleAuthority(RoleType.ADMIN);
     }

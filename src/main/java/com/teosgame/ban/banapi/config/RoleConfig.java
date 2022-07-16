@@ -14,25 +14,20 @@ import lombok.Data;
 @ConfigurationProperties(prefix = "ban.teo.roles")
 @Data
 public class RoleConfig {
-    
-    private String TEO;
+
     private List<String> ADMIN;
     private List<String> DEVELOPER;
 
     public List<SimpleAuthority> getUserRoles(String username) {
+        String lower = username.toLowerCase();
         List<SimpleAuthority> userRoles = new ArrayList<>();
         userRoles.add(SimpleAuthority.SimpleUser());
 
-        // probably a better way to do this with fancy lambdas
-        if (TEO.equalsIgnoreCase(username)) {
-            userRoles.add(SimpleAuthority.SimpleTeo());
-        }
-
-        if (ADMIN.contains(username)) {
+        if (ADMIN.contains(lower)) {
             userRoles.add(SimpleAuthority.SimpleAdmin());
         }
 
-        if (DEVELOPER.contains(username)) {
+        if (DEVELOPER.contains(lower)) {
             userRoles.add(SimpleAuthority.SimpleDev());
         }
 

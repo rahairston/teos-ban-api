@@ -1,4 +1,4 @@
-package com.teosgame.ban.banapi.config;
+package com.teosgame.ban.banapi.filters;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -8,15 +8,14 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.cors.CorsUtils;
 
-import com.teosgame.ban.banapi.filters.AccessTokenFilter;
 import com.teosgame.ban.banapi.service.AuthenticationService;
-import com.teosgame.ban.banapi.util.TokenValidator;
+import com.teosgame.ban.banapi.service.TokenValidatorService;
 
 @Configuration
-public class SecurityConfiguration {
+public class WebSecurityFilter {
 
     @Autowired
-    private TokenValidator tokenValidator;
+    private TokenValidatorService tokenValidator;
 
     @Autowired
     private AuthenticationService authenticationService;

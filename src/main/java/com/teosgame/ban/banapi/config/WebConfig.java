@@ -13,10 +13,13 @@ public class WebConfig implements WebMvcConfigurer {
     @Value("${ban.teo.allowed_origins:}")
     private String origins;
 
+    private static final String[] METHODS = {"GET", "POST", "PUT", "DELETE"};
+
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
             .allowCredentials(true)
+            .allowedMethods(METHODS)
             .allowedOrigins(origins);
     }
 }

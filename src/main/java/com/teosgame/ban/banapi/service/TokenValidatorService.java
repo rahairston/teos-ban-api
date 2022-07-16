@@ -1,4 +1,4 @@
-package com.teosgame.ban.banapi.util;
+package com.teosgame.ban.banapi.service;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
 import com.teosgame.ban.banapi.client.TwitchClient;
-import com.teosgame.ban.banapi.client.model.response.TwitchUserInfo;
+import com.teosgame.ban.banapi.client.model.response.TwitchTokenValidateResponse;
 import com.teosgame.ban.banapi.config.RoleConfig;
 import com.teosgame.ban.banapi.model.SimpleAuthority;
 import com.teosgame.ban.banapi.model.UserAuth;
@@ -22,21 +22,21 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class TokenValidator {
+public class TokenValidatorService {
     public static final String BEARER = "Bearer ";
 
     private final TwitchClient client;
     private final RoleConfig config;
 
-    Logger logger = LoggerFactory.getLogger(JwtValidator.class);
+    Logger logger = LoggerFactory.getLogger(JwtValidatorService.class);
 
     public Authentication validateToken(String authorizationHeader, String sessionId) throws AuthenticationException  {
         try {
             String tokenValue = subStringBearer(authorizationHeader);
-            TwitchUserInfo userInfo = client.getUserInfo(tokenValue);
-            List<SimpleAuthority> authorities = getUserAuthorities(userInfo.getPreferred_username());
+            TwitchTokenValidateResponse response = client.validateToken(tokenValue);
+            List<SimpleAuthority> authorities = getUserAuthorities(response.getLogin());
 
-            return new UserAuth(authorities, tokenValue, sessionId, userInfo.getPreferred_username(), true);
+            return new UserAuth(authorities, tokenValue, sessionId, response.getLogin(), true);
         } catch (InvalidTokenException e) {
             logger.error(e.getMessage());
             throw new AuthenticationCredentialsNotFoundException(e.getMessage());
@@ -48,13 +48,13 @@ public class TokenValidator {
 
     private String subStringBearer(String authorizationHeader) throws InvalidTokenException {
         try {
-            return authorizationHeader.substring(TokenValidator.BEARER.length());
+            return authorizationHeader.substring(TokenValidatorService.BEARER.length());
         } catch (Exception ex) {
             throw new InvalidTokenException("There is no AccessToken in a request header");
         }
     }
 
     private List<SimpleAuthority> getUserAuthorities(String username) {
-        return config.getUserRoles(username.toLowerCase());
+        return config.getUserRoles(username);
     }
 }

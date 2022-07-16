@@ -20,10 +20,10 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 
-import com.teosgame.ban.banapi.util.TokenValidator;
+import com.teosgame.ban.banapi.service.TokenValidatorService;
 
 public class AccessTokenFilter extends AbstractAuthenticationProcessingFilter {
-    private final TokenValidator validator;
+    private final TokenValidatorService validator;
 
     Logger logger = LoggerFactory.getLogger(AccessTokenFilter.class);
 
@@ -36,7 +36,7 @@ public class AccessTokenFilter extends AbstractAuthenticationProcessingFilter {
         )
     );
 
-    public AccessTokenFilter(TokenValidator validator, AuthenticationManager authenticationManager) {
+    public AccessTokenFilter(TokenValidatorService validator, AuthenticationManager authenticationManager) {
         super(matcher);
         setAuthenticationManager(authenticationManager);
         this.validator = validator;

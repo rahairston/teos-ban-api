@@ -1,4 +1,4 @@
-package com.teosgame.ban.banapi.util;
+package com.teosgame.ban.banapi.service;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -6,7 +6,7 @@ import java.security.interfaces.RSAPublicKey;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.auth0.jwk.Jwk;
 import com.auth0.jwk.JwkException;
@@ -17,17 +17,18 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.teosgame.ban.banapi.config.TwitchConfig;
 import com.teosgame.ban.banapi.exception.InvalidJwtException;
+import com.teosgame.ban.banapi.util.Credential;
 
 import lombok.RequiredArgsConstructor;
 
-@Component
+@Service
 @RequiredArgsConstructor
-public class JwtValidator {
+public class JwtValidatorService {
 
     private final TwitchConfig config;
     private final Credential credential;
 
-    Logger logger = LoggerFactory.getLogger(JwtValidator.class);
+    Logger logger = LoggerFactory.getLogger(JwtValidatorService.class);
 
     public DecodedJWT validateAndParse(String idToken) throws InvalidJwtException {
         DecodedJWT jwt = JWT.decode(idToken);
