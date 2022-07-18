@@ -1,4 +1,4 @@
-package com.teosgame.ban.banapi.enums;
+package com.teosgame.ban.banapi.model.enums;
 
 public enum GrantType {
     AUTHORIZATION_CODE("authorization_code"),

@@ -1,12 +1,14 @@
 package com.teosgame.ban.banapi.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import org.springframework.security.core.GrantedAuthority;
 
-import com.teosgame.ban.banapi.enums.RoleType;
+import com.teosgame.ban.banapi.model.enums.RoleType;
 
 @Getter
+@EqualsAndHashCode
 public class SimpleAuthority implements GrantedAuthority {
     public SimpleAuthority(RoleType type) {
         authority = type.toString();

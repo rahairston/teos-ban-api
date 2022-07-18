@@ -20,10 +20,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.teosgame.ban.banapi.client.model.request.TwitchTokenRequest;
 import com.teosgame.ban.banapi.client.model.response.TwitchTokenResponse;
 import com.teosgame.ban.banapi.client.model.response.TwitchTokenValidateResponse;
-import com.teosgame.ban.banapi.client.model.response.TwitchUserInfo;
 import com.teosgame.ban.banapi.config.TwitchConfig;
-import com.teosgame.ban.banapi.enums.GrantType;
 import com.teosgame.ban.banapi.exception.TwitchResponseException;
+import com.teosgame.ban.banapi.model.enums.GrantType;
 import com.teosgame.ban.banapi.util.Credential;
 
 import lombok.RequiredArgsConstructor;
