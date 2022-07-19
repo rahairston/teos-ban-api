@@ -4,3 +4,9 @@ ban:
         allowed_origins: "http://localhost:3000"
         redis:
             host: localhost
+
+logging:
+    level:
+        org:
+            springframework:
+                web: DEBUG

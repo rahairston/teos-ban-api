@@ -30,7 +30,7 @@ public class WebSecurityFilter {
     BasicAuthenticationFilter.class)
             .authorizeHttpRequests()
             .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
-            .antMatchers( "/actuator/health", "/auth/**", "/error").permitAll()
+            .antMatchers( "/actuator/health", "/auth/**", "/error", "/appeal/").permitAll()
             .antMatchers("/actuator/**").hasRole("DEVELOPER")
             .anyRequest().authenticated()
             .and()
