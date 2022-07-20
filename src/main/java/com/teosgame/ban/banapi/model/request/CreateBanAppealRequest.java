@@ -1,12 +1,14 @@
 package com.teosgame.ban.banapi.model.request;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.teosgame.ban.banapi.model.enums.BanType;
+import com.teosgame.ban.banapi.util.BanUtils;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,7 +17,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonAutoDetect
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class BanAppealRequest {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class CreateBanAppealRequest {
 
     @NotNull(message="Please provide a Twitch Username.")
     String twitchUsername;
@@ -38,8 +41,7 @@ public class BanAppealRequest {
     String additionalNotes;
 
     // for resubmission
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Pattern(regexp = BanUtils.GUID_PATTERN)
     String previousAppealId;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     String additionalData;
 }
