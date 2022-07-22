@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.teosgame.ban.banapi.exception.BadRequestException;
 import com.teosgame.ban.banapi.exception.InvalidTokenException;
+import com.teosgame.ban.banapi.exception.NotFoundException;
 import com.teosgame.ban.banapi.model.request.CreateBanAppealRequest;
 import com.teosgame.ban.banapi.model.response.BanAppealResponse;
 import com.teosgame.ban.banapi.service.BanAppealService;
@@ -29,7 +30,7 @@ public class BanAppealController {
 
     @PostMapping(value = "/", produces = "application/json")
     public ResponseEntity<BanAppealResponse> creatBanAppeal(@RequestBody @Validated CreateBanAppealRequest request) 
-        throws BadRequestException {
+        throws BadRequestException, NotFoundException {
         return ResponseEntity.ok(service.createBanAppeal(request));
     }
 }

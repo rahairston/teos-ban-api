@@ -32,7 +32,7 @@ public class AccessTokenFilter extends AbstractAuthenticationProcessingFilter {
             new AntPathRequestMatcher("/auth/**"),                                                                                   
             new AntPathRequestMatcher("/actuator/health"),
             new AntPathRequestMatcher("/error"),
-            new AntPathRequestMatcher("/appeal/"),
+            new AntPathRequestMatcher("/h2-console/**"),
             new AntPathRequestMatcher("/**", HttpMethod.OPTIONS.toString())                                                                  
         )
     );

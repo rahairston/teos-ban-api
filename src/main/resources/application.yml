@@ -4,6 +4,10 @@ spring:
     cache:
         type: redis
         port: 6379
+    data:
+        redis:
+            repositories:
+                type: none
 
 server:
     port: 8080

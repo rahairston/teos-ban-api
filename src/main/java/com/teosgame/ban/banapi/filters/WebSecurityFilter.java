@@ -22,6 +22,7 @@ public class WebSecurityFilter {
  
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.headers().frameOptions().disable();
         return http.csrf().disable()
             .addFilterBefore(
                 new AccessTokenFilter(
@@ -30,7 +31,7 @@ public class WebSecurityFilter {
     BasicAuthenticationFilter.class)
             .authorizeHttpRequests()
             .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
-            .antMatchers( "/actuator/health", "/auth/**", "/error", "/appeal/").permitAll()
+            .antMatchers( "/actuator/health", "/auth/**", "/error", "/h2-console/**").permitAll()
             .antMatchers("/actuator/**").hasRole("DEVELOPER")
             .anyRequest().authenticated()
             .and()
