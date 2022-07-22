@@ -1,13 +1,17 @@
 package com.teosgame.ban.banapi.model.entity;
 
+import java.util.List;
 import java.util.UUID;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -39,9 +43,6 @@ public class AppealEntity extends BaseDBObject {
     @Enumerated(EnumType.STRING)
     BanType banType;
 
-    @Column(nullable = false, length=21)
-    String banStatus;
-
     @Column(nullable = false, columnDefinition = "TINYTEXT")
     String banReason;
 
@@ -54,9 +55,21 @@ public class AppealEntity extends BaseDBObject {
     @Column(nullable = true, columnDefinition = "TINYTEXT")
     String additionalNotes;
 
+    ////////////////// RESUBMISSION VARIABLES //////////////////
+
     @OneToOne(fetch = FetchType.LAZY)
     AppealEntity previous;
 
     @Column(nullable = true)
     String additionalData;
+
+    ////////////////// ADMIN VARIABLES //////////////////
+
+    @Column(nullable = true)
+    @OneToMany(mappedBy="appeal", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
+    List<EvidenceEntity> evidence;
+
+    @OneToOne(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
+    @JoinColumn(name = "JUDGEMENT_ID")
+    JudgementEntity judgement;
 }

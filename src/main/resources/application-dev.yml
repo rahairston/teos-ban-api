@@ -19,6 +19,14 @@ ban:
         redis:
             host: localhost
 
+cloud:
+    aws:
+        credentials:
+            profile-name: default
+        s3:
+            bucketName: teos-test-bucket-457125958973
+            region: us-east-1
+
 logging:
     level:
         org:

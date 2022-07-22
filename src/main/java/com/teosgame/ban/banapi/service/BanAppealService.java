@@ -6,7 +6,8 @@ import org.springframework.stereotype.Service;
 import com.teosgame.ban.banapi.exception.BadRequestException;
 import com.teosgame.ban.banapi.exception.NotFoundException;
 import com.teosgame.ban.banapi.model.entity.AppealEntity;
-import com.teosgame.ban.banapi.model.enums.BanStatus;
+import com.teosgame.ban.banapi.model.entity.JudgementEntity;
+import com.teosgame.ban.banapi.model.enums.JudgementStatus;
 import com.teosgame.ban.banapi.model.request.CreateBanAppealRequest;
 import com.teosgame.ban.banapi.model.request.UpdateBanAppealRequest;
 import com.teosgame.ban.banapi.model.response.BanAppealResponse;
@@ -22,7 +23,7 @@ public class BanAppealService {
     private final BanUtils utils;
     private final BanAppealRepository repository;
     
-    public BanAppealResponse createBanAppeal(CreateBanAppealRequest request) 
+    public String createBanAppeal(CreateBanAppealRequest request) 
         throws BadRequestException, NotFoundException {
         String twitchUserName = SecurityContextHolder.getContext()
             .getAuthentication().getName();
@@ -42,7 +43,7 @@ public class BanAppealService {
                 throw new NotFoundException("Previous Ban Appeal with id " + request.getPreviousAppealId() + " not found");
             }
 
-            if (!previous.getBanStatus().equals(BanStatus.RESUBMISSION_REQUIRED.toString())) {
+            if (!previous.getJudgement().getStatus().equals(JudgementStatus.RESUBMISSION_REQUIRED.toString())) {
                 throw new BadRequestException("Previous Ban Appeal does not require a resubmission");
             }
         }
@@ -51,7 +52,6 @@ public class BanAppealService {
             .twitchUsername(request.getTwitchUsername())
             .discordUsername(request.getDiscordUsername())
             .banType(request.getBanType())
-            .banStatus(BanStatus.PENDING.toString())
             .banReason(request.getBanReason())
             .banJustified(request.getBanJustified())
             .appealReason(request.getAppealReason())
@@ -60,14 +60,16 @@ public class BanAppealService {
             .previous(previous)
             .build();
 
+        // Setting values that have to be made post builder
+        entity.setJudgement(JudgementEntity.builder()
+            .appeal(entity)
+            .status(JudgementStatus.PENDING.toString())
+            .build());
         entity.setCreatedBy(request.getTwitchUsername());
 
         entity = repository.save(entity);
         
-        return BanAppealResponse.builder()
-            .appealId(entity.getId().toString())
-            .banStatus(BanStatus.PENDING.toString())
-            .build();
+        return entity.getId();
     }
 
     public BanAppealResponse updateBanAppeal(String appealId, UpdateBanAppealRequest request) 
@@ -86,12 +88,15 @@ public class BanAppealService {
             if (!request.getTwitchUsername().equalsIgnoreCase(twitchUserName)) {
                 throw new BadRequestException("User submitting ban does not match user name in appeal");
             }
+
+            if (!entity.getJudgement().getStatus().equals(JudgementStatus.PENDING.toString())) {
+                throw new BadRequestException("User cannot edit Appeal once evidence has been submitted.");
+            }
         } else {
 
         }
 
         return BanAppealResponse.builder()
-            .banStatus(BanStatus.BAN_UPHELD.toString())
             .build();
     }
 }

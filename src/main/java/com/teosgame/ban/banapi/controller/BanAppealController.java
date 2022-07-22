@@ -1,5 +1,7 @@
 package com.teosgame.ban.banapi.controller;
 
+import java.net.URI;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -24,13 +26,13 @@ public class BanAppealController {
     private BanAppealService service;
     
     @GetMapping(value = "/", produces = "application/json")
-    public ResponseEntity<Void> getBanAppeals() throws InvalidTokenException {
+    public ResponseEntity<BanAppealResponse> getBanAppeals() throws InvalidTokenException {
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping(value = "/", produces = "application/json")
-    public ResponseEntity<BanAppealResponse> creatBanAppeal(@RequestBody @Validated CreateBanAppealRequest request) 
+    public ResponseEntity<Void> creatBanAppeal(@RequestBody @Validated CreateBanAppealRequest request) 
         throws BadRequestException, NotFoundException {
-        return ResponseEntity.ok(service.createBanAppeal(request));
+        return ResponseEntity.created(URI.create(service.createBanAppeal(request))).build();
     }
 }

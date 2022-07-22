@@ -1,5 +1,7 @@
 package com.teosgame.ban.banapi.model.response;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.teosgame.ban.banapi.model.enums.BanType;
@@ -18,11 +20,14 @@ public class BanAppealResponse {
     String twitchUsername;
     String discordUsername;
     BanType banType;
-    String banStatus;
     String banReason;
     Boolean banJustified;
     String appealReason;
     String additionalNotes;
-    String previousAppealId;
+    ////////////////// RESUBMISSION VARIABLES //////////////////
+    BanAppealResponse previous;
     String additionalData;
+    ////////////////// ADMIN VARIABLES //////////////////
+    List<EvidenceResponse> evidence;
+    JudgementResponse judgement;
 }
