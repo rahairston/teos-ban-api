@@ -41,6 +41,7 @@ public class ExceptionController extends ResponseEntityExceptionHandler {
             }
         }
         ErrorResponse error = new ErrorResponse(message, ex.getCode().value());
+        logger.error("Sending Error of type {} with message {}", ex.getClass(), message);
         return new ResponseEntity<>(error, ex.getCode());
     }
 
@@ -57,6 +58,8 @@ public class ExceptionController extends ResponseEntityExceptionHandler {
             String localizedErrorMessage = fieldError.getDefaultMessage();
             errors.put(fieldError.getField(), localizedErrorMessage);
         }
+
+        logger.error("Sending Error of type {} with message {}", ex.getClass(), errors.toString());
 
         return ResponseEntity.badRequest().body(errors);
     }

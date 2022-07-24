@@ -16,7 +16,7 @@ public class JudgementResponse {
 
     public JudgementResponse(JudgementEntity entity) {
         judgementId = entity.getId();
-        status = entity.getStatus();
+        status = entity.getStatus().toString();
         notes = entity.getNotes();
     }
 }

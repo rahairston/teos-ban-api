@@ -6,12 +6,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.teosgame.ban.banapi.exception.BadRequestException;
+import com.teosgame.ban.banapi.exception.ForbiddenException;
 import com.teosgame.ban.banapi.exception.InvalidTokenException;
 import com.teosgame.ban.banapi.exception.NotFoundException;
 import com.teosgame.ban.banapi.model.request.CreateBanAppealRequest;
@@ -26,13 +30,27 @@ public class BanAppealController {
     private BanAppealService service;
     
     @GetMapping(value = "/", produces = "application/json")
-    public ResponseEntity<BanAppealResponse> getBanAppeals() throws InvalidTokenException {
+    public ResponseEntity<BanAppealResponse> getBanAppeals(
+        @RequestParam(required = false) String username,
+        @RequestParam(required = false) String judgementStatus,
+        @RequestParam(required = false) String banType) throws InvalidTokenException {
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping(value = "/{appealId}", produces = "application/json")
+    public ResponseEntity<BanAppealResponse> getBanAppealbyId(@PathVariable String appealId) 
+        throws NotFoundException, ForbiddenException {
+        return ResponseEntity.ok(service.getBanAppeal(appealId));
     }
 
     @PostMapping(value = "/", produces = "application/json")
     public ResponseEntity<Void> creatBanAppeal(@RequestBody @Validated CreateBanAppealRequest request) 
         throws BadRequestException, NotFoundException {
-        return ResponseEntity.created(URI.create(service.createBanAppeal(request))).build();
+        URI location = ServletUriComponentsBuilder
+            .fromCurrentRequest()
+            .path("/{id}")
+            .buildAndExpand(service.createBanAppeal(request))
+            .toUri();
+        return ResponseEntity.created(location).build();
     }
 }

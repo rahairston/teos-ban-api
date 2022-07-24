@@ -4,24 +4,28 @@ import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import com.teosgame.ban.banapi.model.enums.JudgementStatus;
+
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
-@Builder
-@AllArgsConstructor
+@SuperBuilder
+@NoArgsConstructor
 @Entity
 @Table(name = "JUDGEMENT")
-public class JudgementEntity {
+public class JudgementEntity extends BaseDBObject {
     @Id
     @Column(name = "JUDGEMENT_ID", unique = true, length=36)
     private final String id = UUID.randomUUID().toString();
@@ -30,8 +34,9 @@ public class JudgementEntity {
     @OneToOne(fetch = FetchType.LAZY)
     AppealEntity appeal;
 
-    @Column(name="STATUS", nullable = false, length=21) 
-    String status;
+    @Column(name="STATUS", nullable = false, length=21)
+    @Enumerated(value = EnumType.STRING)
+    JudgementStatus status;
 
     @Column(name="NOTES", columnDefinition = "TINYTEXT", nullable = true)
     String notes;
