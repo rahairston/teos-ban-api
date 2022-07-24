@@ -1,5 +1,6 @@
 package com.teosgame.ban.banapi.service;
 
+import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -18,19 +19,20 @@ import lombok.RequiredArgsConstructor;
 public class S3Service {
     
     private final AmazonS3Client client;
-    private final S3Config s3Config;
+    private final S3Config config;
 
     // Check connectivity
     @PostConstruct
     public void postConstruct() {
-        client.listObjects(s3Config.getBucketName());
+        client.listObjects(config.getBucketName());
     }
 
-    public String generatePreSignedUrl(String filePath,
+    // Only need GET, PUT, and DELETE
+    public URL generatePreSignedUrl(String filePath,
                                        HttpMethod httpMethod) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         calendar.add(Calendar.MINUTE, 1); //validity of 1 minute
-        return client.generatePresignedUrl(s3Config.getBucketName(), filePath, calendar.getTime(), httpMethod).toString();
+        return client.generatePresignedUrl(config.getBucketName(), config.getFileBasePath() + filePath, calendar.getTime(), httpMethod);
     }
 }

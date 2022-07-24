@@ -9,6 +9,11 @@ spring:
             repositories:
                 type: none
 
+cloud:
+    aws:
+        s3:
+            fileBasePath: "v1/teosban/appeal/"
+
 server:
     port: 8080
     servlet:

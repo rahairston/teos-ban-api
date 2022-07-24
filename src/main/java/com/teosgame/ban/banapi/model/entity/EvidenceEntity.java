@@ -30,6 +30,9 @@ public class EvidenceEntity extends BaseDBObject {
     @ManyToOne(fetch = FetchType.LAZY)
     AppealEntity appeal;
 
+    @Column(nullable = false, length = 6)
+    String fileExtension; // TODO enum with acceptable as .png .jpg .jpeg?
+
     @Column(nullable = true, columnDefinition = "TINYTEXT")
     String notes;
 

@@ -13,4 +13,7 @@ public class S3Config {
 
     @Value("${cloud.aws.s3.region}")
     private String regionName;
+
+    @Value("${cloud.aws.s3.fileBasePath}")
+    private String fileBasePath;
 }

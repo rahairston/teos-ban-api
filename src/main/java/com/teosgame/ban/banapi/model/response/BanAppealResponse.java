@@ -25,7 +25,7 @@ public class BanAppealResponse {
     String appealReason;
     String additionalNotes;
     ////////////////// RESUBMISSION VARIABLES //////////////////
-    BanAppealResponse previous;
+    String previousAppealId;
     String additionalData;
     ////////////////// ADMIN VARIABLES //////////////////
     List<EvidenceResponse> evidence;
