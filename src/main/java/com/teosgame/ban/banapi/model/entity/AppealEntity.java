@@ -65,6 +65,9 @@ public class AppealEntity extends BaseDBObject {
 
     ////////////////// ADMIN VARIABLES //////////////////
 
+    @Column(nullable = true, columnDefinition = "TEXT")
+    String adminNotes; // in case users need to edit info in pending state
+
     @Column(nullable = true)
     @OneToMany(mappedBy="appeal", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
     List<EvidenceEntity> evidence;

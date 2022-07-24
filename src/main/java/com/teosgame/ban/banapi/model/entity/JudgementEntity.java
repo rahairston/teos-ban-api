@@ -1,5 +1,6 @@
 package com.teosgame.ban.banapi.model.entity;
 
+import java.util.Date;
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -38,6 +39,16 @@ public class JudgementEntity extends BaseDBObject {
     @Enumerated(value = EnumType.STRING)
     JudgementStatus status;
 
+    @Column(name="RESUBMITTABLE", nullable = true)
+    Boolean resubmittable; //use object Boolean so we can null it
+
+    @Column(name="RESUBMIT_DT", nullable = true)
+    Date resubmitAfterDate;
+
     @Column(name="NOTES", columnDefinition = "TINYTEXT", nullable = true)
     String notes;
+
+    public boolean isResubmittable() {
+        return resubmittable.booleanValue();
+    }
 }

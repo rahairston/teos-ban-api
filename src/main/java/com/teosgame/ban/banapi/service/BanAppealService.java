@@ -86,7 +86,7 @@ public class BanAppealService {
 
         logger.info("User {} creating ban appeal.", twitchUserName);
         
-        if (!request.getTwitchUsername().equalsIgnoreCase(twitchUserName)) {
+        if (!utils.isUserAdmin() || !request.getTwitchUsername().equalsIgnoreCase(twitchUserName)) {
             throw new BadRequestException("User submitting ban does not match user name in appeal");
         }
 
@@ -101,8 +101,8 @@ public class BanAppealService {
                 throw new NotFoundException("Previous Ban Appeal with id " + request.getPreviousAppealId() + " not found");
             }
 
-            if (!previous.getJudgement().getStatus().isResubmissionRequired()) {
-                throw new BadRequestException("Previous Ban Appeal does not require a resubmission");
+            if (!previous.getJudgement().isResubmittable()) {
+                throw new BadRequestException("Previous Ban Appeal does not allow a resubmission");
             }
         }
 
