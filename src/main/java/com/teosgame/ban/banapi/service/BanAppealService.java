@@ -1,5 +1,6 @@
 package com.teosgame.ban.banapi.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,11 +36,37 @@ public class BanAppealService {
 
     Logger logger = LoggerFactory.getLogger(BanAppealService.class);
 
+    /**
+     * When displaying in  a list form it's probably best to just display the number and the status. 
+     * ID returned so we can grab the individual object upon potential click
+     */
+    public List<BanAppealResponse> getBanAppeals(String username, String judgementStatus, String banType) {
+        String twitchUsername = SecurityContextHolder.getContext()
+            .getAuthentication().getName();
+
+        logger.info("User {} getting ban appeals with parameters: name - {} status - {} type - {}.", twitchUsername, username, judgementStatus, banType);
+        List<BanAppealResponse> appeals = new ArrayList<>();
+
+        if (!utils.isUserAdmin()) {
+            // Since users probably won't have 100 appeals, we won't let them filter it out at all
+            appeals.addAll(repository.findByTwitchUsername(twitchUsername).stream().map(entity -> {
+                return BanAppealResponse.builder()
+                    .appealId(entity.getId())
+                    .judgement(new JudgementResponse(entity.getJudgement()))
+                .build();
+            }).collect(Collectors.toList()));
+        } else { // only admins can see evidence
+            
+        }
+
+        return appeals;
+    }
+
     public BanAppealResponse getBanAppeal(String appealId) throws NotFoundException, ForbiddenException {
-        String twitchUserName = SecurityContextHolder.getContext()
+        String twitchUsername = SecurityContextHolder.getContext()
             .getAuthentication().getName();
         
-        logger.info("User {} getting ban appeal by ID {}.", twitchUserName, appealId);
+        logger.info("User {} getting ban appeal by ID {}.", twitchUsername, appealId);
 
         AppealEntity entity = repository.findById(appealId).orElse(null);
 
@@ -51,7 +78,7 @@ public class BanAppealService {
 
         // Admins can view all and submitters can view their own appeals
         if (!utils.isUserAdmin()) {
-            if (!entity.getTwitchUsername().equalsIgnoreCase(twitchUserName)) {
+            if (!entity.getTwitchUsername().equalsIgnoreCase(twitchUsername)) {
                 throw new ForbiddenException("User does not own this appeal");
             }
         } else if (entity.getEvidence() != null) { // only admins can see evidence
@@ -81,13 +108,17 @@ public class BanAppealService {
     
     public String createBanAppeal(CreateBanAppealRequest request) 
         throws BadRequestException, NotFoundException {
-        String twitchUserName = SecurityContextHolder.getContext()
+        String twitchUsername = SecurityContextHolder.getContext()
             .getAuthentication().getName();
 
-        logger.info("User {} creating ban appeal.", twitchUserName);
+        logger.info("User {} creating ban appeal, {}", twitchUsername, request.getTwitchUsername());
         
-        if (!utils.isUserAdmin() || !request.getTwitchUsername().equalsIgnoreCase(twitchUserName)) {
+        if (!(utils.isUserAdmin() || request.getTwitchUsername().equalsIgnoreCase(twitchUsername))) {
             throw new BadRequestException("User submitting ban does not match user name in appeal");
+        }
+
+        if (repository.countPendingByUsername(twitchUsername) > 0) {
+            throw new BadRequestException("User cannot have multiple Pending or Reviewing Appeals Submitted.");
         }
 
         // Ignore add ons unless they are resubmitting
@@ -132,31 +163,99 @@ public class BanAppealService {
     }
 
     public BanAppealResponse updateBanAppeal(String appealId, UpdateBanAppealRequest request) 
-        throws BadRequestException, NotFoundException {
-        String twitchUserName = SecurityContextHolder.getContext()
+        throws BadRequestException, NotFoundException, ForbiddenException {
+        String twitchUsername = SecurityContextHolder.getContext()
             .getAuthentication().getName();
 
-        logger.info("User {} updating ban appeal with ID {}.", twitchUserName, appealId);
+        logger.info("User {} updating ban appeal with ID {}.", twitchUsername, appealId);
         
         AppealEntity entity = repository.findById(appealId).orElse(null);
 
         if (entity == null) {
-            throw new NotFoundException("Appela with id " + appealId + " does not exist");
+            throw new NotFoundException("Appeal with id " + appealId + " does not exist");
         }
 
         if (!utils.isUserAdmin()) {
-            if (!request.getTwitchUsername().equalsIgnoreCase(twitchUserName)) {
-                throw new BadRequestException("User submitting ban does not match user name in appeal");
-            }
+            if (!entity.getTwitchUsername().equalsIgnoreCase(twitchUsername)) {
+                throw new BadRequestException("User updating ban does not match user name in appeal");
+            }  
 
             if (!entity.getJudgement().getStatus().isPending()) {
-                throw new BadRequestException("User cannot edit Appeal once evidence has been submitted.");
+                throw new ForbiddenException("User cannot edit Appeal once evidence has been submitted.");
             }
         } else {
-
+            if (request.getAdminNotes() != null) {
+                entity.setAdminNotes(request.getAdminNotes());
+            }
         }
 
+        // Ignore add ons unless they are resubmitting
+        String previousAppealId = null;
+
+        if (entity.getPrevious() != null) {
+            if (request.getAdditionalData() != null) {
+                entity.setAdditionalData(request.getAdditionalData());
+            }
+            previousAppealId = entity.getPrevious().getId();
+        }
+
+        if (request.getDiscordUsername() != null) {
+            entity.setDiscordUsername(request.getDiscordUsername());
+        }
+
+        if (request.getBanReason() != null) {
+            entity.setBanReason(request.getBanReason());
+        }
+
+        if (request.getAppealReason() != null) {
+            entity.setAppealReason(request.getAppealReason());
+        }
+
+        if (request.getAdditionalNotes() != null) {
+            entity.setAdditionalNotes(request.getAdditionalNotes());
+        }
+
+        entity = repository.save(entity);
+
         return BanAppealResponse.builder()
-            .build();
+            .appealId(entity.getId())
+            .twitchUsername(entity.getTwitchUsername())
+            .discordUsername(entity.getDiscordUsername())
+            .banType(entity.getBanType())
+            .banReason(entity.getBanReason())
+            .banJustified(entity.getBanJustified())
+            .appealReason(entity.getAppealReason())
+            .additionalNotes(entity.getAdditionalNotes())
+            .previousAppealId(previousAppealId)
+            .additionalData(entity.getAdditionalData())
+            .judgement(new JudgementResponse(entity.getJudgement()))
+        .build();
+    }
+
+    public void deleteBanAppeal(String appealId)
+        throws BadRequestException, ForbiddenException, NotFoundException {
+
+        String twitchUsername = SecurityContextHolder.getContext()
+            .getAuthentication().getName();
+
+        logger.info("User {} deleting ban appeal with ID {}.", twitchUsername, appealId);
+        
+        AppealEntity entity = repository.findById(appealId).orElse(null);
+
+        if (entity == null) {
+            throw new NotFoundException("Appeal with id " + appealId + " does not exist");
+        }
+
+        if (!utils.isUserAdmin()) {
+            if (!entity.getTwitchUsername().equalsIgnoreCase(twitchUsername)) {
+                throw new BadRequestException("User deletiong ban does not match user name in appeal");
+            }  
+
+            if (!entity.getJudgement().getStatus().isPending()) {
+                throw new ForbiddenException("User cannot delete Appeal once evidence has been submitted.");
+            }
+        } 
+
+        repository.delete(entity);
     }
 }
