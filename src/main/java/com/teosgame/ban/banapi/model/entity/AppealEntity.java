@@ -16,6 +16,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.teosgame.ban.banapi.model.enums.BanType;
+import com.teosgame.ban.banapi.model.request.CreateBanAppealRequest;
+import com.teosgame.ban.banapi.model.request.UpdateBanAppealRequest;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -75,4 +77,41 @@ public class AppealEntity extends BaseDBObject {
     @OneToOne(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
     @JoinColumn(name = "JUDGEMENT_ID")
     JudgementEntity judgement;
+
+    public static AppealEntity fromRequest(CreateBanAppealRequest request, AppealEntity previous, String additionalData) {
+        return AppealEntity.builder()
+            .twitchUsername(request.getTwitchUsername())
+            .discordUsername(request.getDiscordUsername())
+            .banType(request.getBanType())
+            .banReason(request.getBanReason())
+            .banJustified(request.getBanJustified())
+            .appealReason(request.getAppealReason())
+            .additionalNotes(request.getAdditionalNotes())
+            .additionalData(additionalData)
+            .previous(previous)
+            .createdBy(request.getTwitchUsername())
+        .build();
+    }
+
+    public void updateEntityFromRequest(UpdateBanAppealRequest request) {
+        if (previous != null && request.getAdditionalData() != null) {
+            additionalData = request.getAdditionalData();
+        }
+
+        if (request.getDiscordUsername() != null) {
+            discordUsername = request.getDiscordUsername();
+        }
+
+        if (request.getBanReason() != null) {
+            banReason = request.getBanReason();
+        }
+
+        if (request.getAppealReason() != null) {
+            appealReason = request.getAppealReason();
+        }
+
+        if (request.getAdditionalNotes() != null) {
+            additionalNotes = request.getAdditionalNotes();
+        }
+    }
 }

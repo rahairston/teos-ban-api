@@ -1,6 +1,7 @@
 package com.teosgame.ban.banapi.controller;
 
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.teosgame.ban.banapi.exception.BadRequestException;
 import com.teosgame.ban.banapi.exception.ForbiddenException;
-import com.teosgame.ban.banapi.exception.InvalidTokenException;
 import com.teosgame.ban.banapi.exception.NotFoundException;
 import com.teosgame.ban.banapi.model.request.CreateBanAppealRequest;
 import com.teosgame.ban.banapi.model.response.BanAppealResponse;
@@ -30,11 +30,11 @@ public class BanAppealController {
     private BanAppealService service;
     
     @GetMapping(value = "/", produces = "application/json")
-    public ResponseEntity<BanAppealResponse> getBanAppeals(
+    public ResponseEntity<List<BanAppealResponse>> getBanAppeals(
         @RequestParam(required = false) String username,
         @RequestParam(required = false) String judgementStatus,
-        @RequestParam(required = false) String banType) throws InvalidTokenException {
-        return ResponseEntity.noContent().build();
+        @RequestParam(required = false) String banType) throws BadRequestException {
+        return ResponseEntity.ok(service.getBanAppeals(username, judgementStatus, banType));
     }
 
     @GetMapping(value = "/{appealId}", produces = "application/json")

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.teosgame.ban.banapi.model.entity.AppealEntity;
 import com.teosgame.ban.banapi.model.enums.BanType;
 
 import lombok.AllArgsConstructor;
@@ -30,4 +31,21 @@ public class BanAppealResponse {
     ////////////////// ADMIN VARIABLES //////////////////
     List<EvidenceResponse> evidence;
     JudgementResponse judgement;
+
+    public static BanAppealResponse fromEntity(AppealEntity entity, String previousId, List<EvidenceResponse> evidence) {
+        return BanAppealResponse.builder()
+            .appealId(entity.getId())
+            .twitchUsername(entity.getTwitchUsername())
+            .discordUsername(entity.getDiscordUsername())
+            .banType(entity.getBanType())
+            .banReason(entity.getBanReason())
+            .banJustified(entity.getBanJustified())
+            .appealReason(entity.getAppealReason())
+            .additionalNotes(entity.getAdditionalNotes())
+            .previousAppealId(previousId)
+            .additionalData(entity.getAdditionalData())
+            .evidence(evidence)
+            .judgement(new JudgementResponse(entity.getJudgement()))
+        .build();
+    }
 }
