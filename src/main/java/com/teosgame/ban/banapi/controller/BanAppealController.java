@@ -32,9 +32,9 @@ public class BanAppealController {
     @GetMapping(value = "/", produces = "application/json")
     public ResponseEntity<List<BanAppealResponse>> getBanAppeals(
         @RequestParam(required = false) String username,
-        @RequestParam(required = false) String judgementStatus,
-        @RequestParam(required = false) String banType) throws BadRequestException {
-        return ResponseEntity.ok(service.getBanAppeals(username, judgementStatus, banType));
+        @RequestParam(required = false, name = "type") String banType,
+        @RequestParam(required = false, name = "status") String judgementStatus) throws BadRequestException {
+        return ResponseEntity.ok(service.getBanAppeals(username, banType, judgementStatus));
     }
 
     @GetMapping(value = "/{appealId}", produces = "application/json")

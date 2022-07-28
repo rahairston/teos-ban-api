@@ -42,6 +42,6 @@ public class CreateBanAppealRequest {
 
     // for resubmission
     @Pattern(regexp = BanUtils.GUID_PATTERN)
-    String previousAppealId;
+    String previousAppealId = ""; // default to empty for getBy ID or else null
     String additionalData;
 }

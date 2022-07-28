@@ -1,5 +1,6 @@
 package com.teosgame.ban.banapi.model.entity;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -93,7 +94,7 @@ public class AppealEntity extends BaseDBObject {
         .build();
     }
 
-    public void updateEntityFromRequest(UpdateBanAppealRequest request) {
+    public void updateEntityFromRequest(UpdateBanAppealRequest request, String username) {
         if (previous != null && request.getAdditionalData() != null) {
             additionalData = request.getAdditionalData();
         }
@@ -113,5 +114,8 @@ public class AppealEntity extends BaseDBObject {
         if (request.getAdditionalNotes() != null) {
             additionalNotes = request.getAdditionalNotes();
         }
+
+        modifiedAt = new Date();
+        modifiedBy = twitchUsername;
     }
 }

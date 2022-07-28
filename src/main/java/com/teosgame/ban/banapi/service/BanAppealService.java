@@ -42,7 +42,7 @@ public class BanAppealService {
      * When displaying in  a list form it's probably best to just display the number and the status. 
      * ID returned so we can grab the individual object upon potential click
      */
-    public List<BanAppealResponse> getBanAppeals(String username, String judgementStatus, String banType) 
+    public List<BanAppealResponse> getBanAppeals(String username, String banType, String judgementStatus) 
         throws BadRequestException {
         String twitchUsername = SecurityContextHolder.getContext()
             .getAuthentication().getName();
@@ -54,7 +54,7 @@ public class BanAppealService {
             // Since users probably won't have 100 appeals, we won't let them filter it out at all
             entities = repository.findByTwitchUsername(twitchUsername);
         } else { // only admins can see evidence
-            entities = getAppealsByFilters(username, judgementStatus, banType);
+            entities = getAppealsByFilters(username, banType, judgementStatus);
         }
 
         return entities.stream().map(entity -> {
@@ -100,6 +100,7 @@ public class BanAppealService {
         // Ignore add ons unless they are resubmitting
         String additionalData = null;
         AppealEntity previous = repository.findById(request.getPreviousAppealId()).orElse(null);
+
         validator.validateCreateRequest(
             request, 
             twitchUsername,
@@ -135,7 +136,7 @@ public class BanAppealService {
 
         validator.validateUpdateRequest(request, entity, appealId, twitchUsername);
 
-        entity.updateEntityFromRequest(request);
+        entity.updateEntityFromRequest(request, twitchUsername);
 
         entity = repository.save(entity);;
     }
@@ -155,19 +156,11 @@ public class BanAppealService {
         repository.delete(entity);
     }
 
-    private List<AppealEntity> getAppealsByFilters(String username, String judgementStatus, String banType)
+    private List<AppealEntity> getAppealsByFilters(String username, String banType, String judgementStatus)
         throws BadRequestException {
-        BanType type = BanType.fromType(banType);
-        if (banType != null && type == null) { // TODO: M<ove bad request to enum
-            throw new BadRequestException("Unknown ban type: " + banType);
-        }
+        BanType.fromType(banType);
+        JudgementStatus.fromStatus(judgementStatus);
 
-        JudgementStatus status = JudgementStatus.fromStatus(judgementStatus);
-        if (judgementStatus != null && status == null) { // TODO: M<ove bad request to enum
-            throw new BadRequestException("Unknown ban status: " + judgementStatus);
-        }
-
-
-        return null;
+        return repository.findByUsernameAndBanTypeAndJudgmentStatus(username, banType.toUpperCase(), judgementStatus.toUpperCase());
     }
 }

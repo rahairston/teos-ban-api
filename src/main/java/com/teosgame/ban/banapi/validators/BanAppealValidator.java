@@ -43,7 +43,7 @@ public class BanAppealValidator {
         }
 
         // Ignore add ons unless they are resubmitting
-        if (request.getPreviousAppealId() != null) {
+        if (request.getPreviousAppealId() != "") {
             if (previous == null) {
                 throw new NotFoundException("Previous Ban Appeal with id " + request.getPreviousAppealId() + " not found");
             }

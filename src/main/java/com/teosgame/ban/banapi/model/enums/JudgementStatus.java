@@ -1,5 +1,7 @@
 package com.teosgame.ban.banapi.model.enums;
 
+import com.teosgame.ban.banapi.exception.BadRequestException;
+
 public enum JudgementStatus {
     PENDING("Pending"), // user submits
     REVIEWING("Reviewing"), // evidence applied
@@ -11,18 +13,26 @@ public enum JudgementStatus {
         this.status = status;
     }
 
-    public static JudgementStatus fromStatus(String status) {
+    public static JudgementStatus fromStatus(String status) throws BadRequestException{
+        if (status == null) {
+            return null;
+        }
+
         for (JudgementStatus banStatus : JudgementStatus.values()) {
-            if (banStatus.toString().equals(status)) {
+            if (banStatus.toString().equalsIgnoreCase(status)) {
                 return banStatus;
             }
         }
 
-        return null;
+        throw new BadRequestException("Unknown judgement status: " + status);
     }
 
     public boolean isPending() {
         return this.equals(PENDING);
+    }
+
+    public boolean isUpheld() {
+        return this.equals(BAN_UPHELD);
     }
     
     @Override
