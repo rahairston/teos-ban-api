@@ -85,6 +85,7 @@ public class TwitchClient {
             ResponseEntity<TwitchTokenResponse> response = restTemplate.postForEntity(config.getTokenUrl(),
                 request, 
                 TwitchTokenResponse.class);
+            logger.info("response: {}", response.getBody());
             return response.getBody();
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             logger.error("Error Fetching Twitch Refresh Token");

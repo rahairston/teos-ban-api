@@ -25,7 +25,7 @@ public class TwitchAuthController {
     
     @GetMapping(value = "/token", produces = "application/json")
     public ResponseEntity<TokenResponse> getAuthToken(@RequestParam(required = false) String code, 
-    @RequestParam(required = false) String refresh, @RequestParam String nonce) 
+    @RequestParam(required = false) String refresh, @RequestParam(required = false) String nonce) 
         throws TwitchResponseException, UnknownException, NotFoundException,
                 UserUnverifiedException, BadRequestException, InvalidJwtException {
         if (code == null && refresh == null) {
@@ -36,6 +36,13 @@ public class TwitchAuthController {
             throw new BadRequestException("Only One request parameter of \"code\" or \"refresh\" is required");
         }
 
-        return ResponseEntity.ok(authService.getTwitchToken(code, refresh, nonce));
+        TokenResponse resp = null;
+        if (code != null) {
+          resp = authService.getTwitchToken(code, nonce);
+        } else {
+          resp = authService.refreshToken(refresh);
+        }
+
+        return ResponseEntity.ok(resp);
     }
 }

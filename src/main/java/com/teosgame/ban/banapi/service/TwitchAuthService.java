@@ -35,19 +35,14 @@ public class TwitchAuthService {
 
     Logger logger = LoggerFactory.getLogger(TwitchAuthService.class);
 
-    public TokenResponse getTwitchToken(String authCode, String refresh, String nonce) 
+    public TokenResponse getTwitchToken(String authCode, String nonce) 
         throws TwitchResponseException, UnknownException, 
             NotFoundException, UserUnverifiedException,
             InvalidJwtException {
-        TwitchTokenResponse token = null;
-        if (authCode != null) {
-            token = twitchClient.getTwitchAccessToken(authCode);
-        } else {
-            token = twitchClient.refreshTwitchAccessToken(refresh);
-        }
+        TwitchTokenResponse token = twitchClient.getTwitchAccessToken(authCode);
 
         if (!token.getNonce().equals(nonce)) {
-            throw new InvalidJwtException("Nonce is not equlal");
+            throw new InvalidJwtException("Nonce is not equal");
         }
 
         TwitchUserInfo userInfo = TwitchUserInfo.fromClaims(jwtValidator.validateAndParse(token.getId_token()));
@@ -74,6 +69,15 @@ public class TwitchAuthService {
             .email(userInfo.getEmail())
             .profileImageUrl(userInfo.getPicture())
             .roles(roles)
+            .build();
+    }
+
+    public TokenResponse refreshToken(String refresh) throws TwitchResponseException {
+        TwitchTokenResponse token = twitchClient.refreshTwitchAccessToken(refresh);
+        return TokenResponse.builder()
+            .accessToken(token.getAccess_token())
+            .refreshToken(token.getRefresh_token())
+            .expiresIn(token.getExpires_in())
             .build();
     }
 }
