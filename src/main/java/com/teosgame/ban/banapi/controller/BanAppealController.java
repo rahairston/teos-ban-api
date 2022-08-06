@@ -23,7 +23,7 @@ import com.teosgame.ban.banapi.model.response.BanAppealResponse;
 import com.teosgame.ban.banapi.service.BanAppealService;
 
 @RestController
-@RequestMapping("/appeal")
+@RequestMapping("/appeals")
 public class BanAppealController {
 
     @Autowired
