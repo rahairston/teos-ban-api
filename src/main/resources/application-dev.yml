@@ -31,4 +31,4 @@ logging:
     level:
         org:
             springframework:
-                web: INFO
+                web: DEBUG

@@ -34,11 +34,12 @@ public class BanAppealValidator {
     public void validateCreateRequest(CreateBanAppealRequest request, 
         String twitchUsername, int existingAppealCount, AppealEntity previous)
             throws BadRequestException, NotFoundException {
-        if (!(utils.isUserAdmin() || request.getTwitchUsername().equalsIgnoreCase(twitchUsername))) {
+        boolean isUserAdmin = utils.isUserAdmin();
+        if (!(isUserAdmin || request.getTwitchUsername().equalsIgnoreCase(twitchUsername))) {
             throw new BadRequestException("User submitting ban does not match user name in appeal");
         }
 
-        if (existingAppealCount > 0) {
+        if (!isUserAdmin && existingAppealCount > 0) {
             throw new BadRequestException("User cannot have multiple Pending or Reviewing Appeals Submitted.");
         }
 

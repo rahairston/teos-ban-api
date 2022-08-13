@@ -104,7 +104,7 @@ public class BanAppealService {
         validator.validateCreateRequest(
             request, 
             twitchUsername,
-            repository.countPendingByUsername(twitchUsername),
+            repository.countPendingByUsername(request.getTwitchUsername()),
             previous);
 
         if (previous != null) {
