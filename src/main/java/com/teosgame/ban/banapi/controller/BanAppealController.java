@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.teosgame.ban.banapi.exception.BadRequestException;
 import com.teosgame.ban.banapi.exception.ForbiddenException;
@@ -46,11 +46,9 @@ public class BanAppealController {
     @PostMapping(value = "/", produces = "application/json")
     public ResponseEntity<Void> creatBanAppeal(@RequestBody @Validated CreateBanAppealRequest request) 
         throws BadRequestException, NotFoundException {
-        URI location = ServletUriComponentsBuilder
-            .fromCurrentRequest()
-            .path("/{id}")
-            .buildAndExpand(service.createBanAppeal(request))
-            .toUri();
+        URI location = UriComponentsBuilder
+            .fromPath(service.createBanAppeal(request))
+            .build().toUri();
         return ResponseEntity.created(location).build();
     }
 }
