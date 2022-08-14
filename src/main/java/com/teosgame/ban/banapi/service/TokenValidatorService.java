@@ -28,7 +28,7 @@ public class TokenValidatorService {
     private final TwitchClient client;
     private final RoleConfig config;
 
-    Logger logger = LoggerFactory.getLogger(JwtValidatorService.class);
+    Logger logger = LoggerFactory.getLogger(TokenValidatorService.class);
 
     public Authentication validateToken(String authorizationHeader, String sessionId) throws AuthenticationException  {
         try {
