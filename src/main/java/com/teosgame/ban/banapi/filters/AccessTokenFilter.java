@@ -11,7 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,11 +21,15 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
+import com.teosgame.ban.banapi.exception.BaseException;
 import com.teosgame.ban.banapi.service.TokenValidatorService;
 
 public class AccessTokenFilter extends AbstractAuthenticationProcessingFilter {
     private final TokenValidatorService validator;
+    @Qualifier("handlerExceptionResolver")
+    private HandlerExceptionResolver resolver;
 
     Logger logger = LoggerFactory.getLogger(AccessTokenFilter.class);
 
@@ -37,9 +43,10 @@ public class AccessTokenFilter extends AbstractAuthenticationProcessingFilter {
         )
     );
 
-    public AccessTokenFilter(TokenValidatorService validator, AuthenticationManager authenticationManager) {
+    public AccessTokenFilter(TokenValidatorService validator, AuthenticationManager authenticationManager, HandlerExceptionResolver resolver) {
         super(matcher);
         setAuthenticationManager(authenticationManager);
+        this.resolver = resolver;
         this.validator = validator;
     }
 
@@ -66,11 +73,19 @@ public class AccessTokenFilter extends AbstractAuthenticationProcessingFilter {
         chain.doFilter(request, response);
     }
 
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
+    AuthenticationException failed) throws IOException, ServletException {
+        SecurityContextHolder.clearContext();
+        logger.error("Error occured on authentication attempt {}", failed.getMessage());
+        resolver.resolveException(request, response, null, new BaseException(failed.getMessage(), HttpStatus.UNAUTHORIZED));
+    }
+
     private String extractAuthorizationHeaderAsString(HttpServletRequest request) throws AuthenticationCredentialsNotFoundException {
         try {
             return request.getHeader("Authorization");
         } catch (Exception ex) {
-            throw new AuthenticationCredentialsNotFoundException("There is no Authorization header in a request");
+            throw new AuthenticationCredentialsNotFoundException("There is no Authorization header in the request");
         }
     }
 }
