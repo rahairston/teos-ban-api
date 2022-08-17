@@ -72,8 +72,17 @@ public class TwitchAuthService {
             .build();
     }
 
-    public TokenResponse refreshToken(String refresh) throws TwitchResponseException {
+    public TokenResponse refreshToken(String refresh) throws TwitchResponseException, InvalidJwtException {
         TwitchTokenResponse token = twitchClient.refreshTwitchAccessToken(refresh);
+
+        ServletRequestAttributes attr = (ServletRequestAttributes) 
+            RequestContextHolder.currentRequestAttributes();
+        HttpSession session = attr.getRequest().getSession(true);
+
+        TwitchUserInfo userInfo = TwitchUserInfo.fromClaims(jwtValidator.validateAndParse(token.getId_token()));
+
+        redisClient.setValue(userInfo.getPreferred_username().toLowerCase(), session.getId());
+        
         return TokenResponse.builder()
             .accessToken(token.getAccess_token())
             .refreshToken(token.getRefresh_token())

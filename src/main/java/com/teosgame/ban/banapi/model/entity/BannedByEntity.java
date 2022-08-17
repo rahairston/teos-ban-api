@@ -4,7 +4,10 @@ import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -29,4 +32,8 @@ public class BannedByEntity {
     // String due to potential "pre-YEAR" since some bans were prior to tracking stats
     @Column(nullable = false, length=20)
     String banDate;
+
+    @JoinColumn(name="evidence_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    EvidenceEntity evidence;
 }
