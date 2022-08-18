@@ -1,7 +1,6 @@
 package com.teosgame.ban.banapi.controller;
 
 import java.net.URI;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +19,7 @@ import com.teosgame.ban.banapi.exception.ForbiddenException;
 import com.teosgame.ban.banapi.exception.NotFoundException;
 import com.teosgame.ban.banapi.model.request.CreateBanAppealRequest;
 import com.teosgame.ban.banapi.model.response.BanAppealResponse;
+import com.teosgame.ban.banapi.model.response.BanAppealsResponse;
 import com.teosgame.ban.banapi.service.BanAppealService;
 
 @RestController
@@ -30,11 +30,13 @@ public class BanAppealController {
     private BanAppealService service;
     
     @GetMapping(value = "/", produces = "application/json")
-    public ResponseEntity<List<BanAppealResponse>> getBanAppeals(
+    public ResponseEntity<BanAppealsResponse> getBanAppeals(
         @RequestParam(required = false) String username,
         @RequestParam(required = false, name = "type") String banType,
-        @RequestParam(required = false, name = "status") String judgementStatus) throws BadRequestException {
-        return ResponseEntity.ok(service.getBanAppeals(username, banType, judgementStatus));
+        @RequestParam(required = false, name = "status") String judgementStatus,
+        @RequestParam(required = true, name = "pageCount") int pageCount,
+        @RequestParam(required = true, name = "pageSize") int pageSize) throws BadRequestException {
+        return ResponseEntity.ok(service.getBanAppeals(username, banType, judgementStatus, pageCount, pageSize));
     }
 
     @GetMapping(value = "/{appealId}", produces = "application/json")

@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.teosgame.ban.banapi.client.model.request.TwitchTokenRequest;
 import com.teosgame.ban.banapi.client.model.response.TwitchTokenResponse;
 import com.teosgame.ban.banapi.client.model.response.TwitchTokenValidateResponse;
+import com.teosgame.ban.banapi.client.model.response.TwitchUserInfo;
 import com.teosgame.ban.banapi.config.TwitchConfig;
 import com.teosgame.ban.banapi.exception.TwitchResponseException;
 import com.teosgame.ban.banapi.model.enums.GrantType;
@@ -93,24 +94,24 @@ public class TwitchClient {
         }
     }
 
-    // public TwitchUserInfo getUserInfo(String accessToken) 
-    //     throws TwitchResponseException {
-    //     HttpHeaders headers = new HttpHeaders();
-    //     headers.setBearerAuth(accessToken);
-    //     HttpEntity<Void> request = new HttpEntity<Void>(headers);
+    public TwitchUserInfo getUserInfo(String accessToken) 
+        throws TwitchResponseException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(accessToken);
+        HttpEntity<Void> request = new HttpEntity<Void>(headers);
 
-    //     try {
-    //         ResponseEntity<TwitchUserInfo> response = restTemplate.exchange(config.getUserInfoUrl(),
-    //             HttpMethod.GET, 
-    //             request, 
-    //             TwitchUserInfo.class);
+        try {
+            ResponseEntity<TwitchUserInfo> response = restTemplate.exchange(config.getUserInfoUrl(),
+                HttpMethod.GET, 
+                request, 
+                TwitchUserInfo.class);
 
-    //         return response.getBody();
-    //     } catch (HttpClientErrorException | HttpServerErrorException e) {
-    //         logger.error("Error Fetching Twitch UserInfo");
-    //         throw new TwitchResponseException(e.getLocalizedMessage(), e.getStatusCode());
-    //     }
-    // }
+            return response.getBody();
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            logger.error("Error Fetching Twitch UserInfo");
+            throw new TwitchResponseException(e.getLocalizedMessage(), e.getStatusCode());
+        }
+    }
 
     public TwitchTokenValidateResponse validateToken(String accessToken) 
         throws TwitchResponseException {

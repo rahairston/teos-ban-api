@@ -5,6 +5,8 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,7 @@ import com.teosgame.ban.banapi.model.enums.JudgementStatus;
 import com.teosgame.ban.banapi.model.request.CreateBanAppealRequest;
 import com.teosgame.ban.banapi.model.request.UpdateBanAppealRequest;
 import com.teosgame.ban.banapi.model.response.BanAppealResponse;
+import com.teosgame.ban.banapi.model.response.BanAppealsResponse;
 import com.teosgame.ban.banapi.model.response.EvidenceResponse;
 import com.teosgame.ban.banapi.model.response.JudgementResponse;
 import com.teosgame.ban.banapi.persistence.BanAppealRepository;
@@ -42,27 +45,38 @@ public class BanAppealService {
      * When displaying in  a list form it's probably best to just display the number and the status. 
      * ID returned so we can grab the individual object upon potential click
      */
-    public List<BanAppealResponse> getBanAppeals(String username, String banType, String judgementStatus) 
+    public BanAppealsResponse getBanAppeals(String username, 
+        String banType, String judgementStatus, int pageCount, int pageSize) 
         throws BadRequestException {
         String twitchUsername = SecurityContextHolder.getContext()
             .getAuthentication().getName();
 
         logger.info("User {} getting ban appeals with parameters: name - {} status - {} type - {}.", twitchUsername, username, judgementStatus, banType);
         List<AppealEntity> entities;
+        long totalPages;
+        long totalSize;
 
         if (!utils.isUserAdmin()) {
             // Since users probably won't have 100 appeals, we won't let them filter it out at all
             entities = repository.findByTwitchUsername(twitchUsername);
+            totalSize = entities.size();
+            totalPages = totalSize / pageSize;
         } else { // only admins can see evidence
-            entities = getAppealsByFilters(username, banType, judgementStatus);
+            Page<AppealEntity> page = getAppealsByFilters(username, banType, judgementStatus, pageCount, pageSize);
+            entities = page.getContent();
+            totalSize = page.getTotalElements();
+            totalPages = page.getTotalPages();
         }
 
-        return entities.stream().map(entity -> {
-            return BanAppealResponse.builder()
-                .appealId(entity.getId())
-                .judgement(new JudgementResponse(entity.getJudgement()))
-            .build();
-        }).collect(Collectors.toList());
+        return new BanAppealsResponse(pageCount, pageSize, totalPages, totalSize,
+            entities.stream().map(entity -> {
+              return BanAppealResponse.builder()
+                  .appealId(entity.getId())
+                  .judgement(new JudgementResponse(entity.getJudgement()))
+              .build();
+          }).collect(Collectors.toList())
+        );
+
     }
 
     public BanAppealResponse getBanAppeal(String appealId) throws NotFoundException, ForbiddenException {
@@ -156,11 +170,22 @@ public class BanAppealService {
         repository.delete(entity);
     }
 
-    private List<AppealEntity> getAppealsByFilters(String username, String banType, String judgementStatus)
+    private Page<AppealEntity> getAppealsByFilters(String username, String banType, String judgementStatus, int pageCount, int pageSize)
         throws BadRequestException {
-        BanType.fromType(banType);
-        JudgementStatus.fromStatus(judgementStatus);
+        if (banType != null) {
+            BanType.fromType(banType);
+            banType = banType.toUpperCase();
+        }
 
-        return repository.findByUsernameAndBanTypeAndJudgmentStatus(username, banType.toUpperCase(), judgementStatus.toUpperCase());
+        if (judgementStatus != null) {
+            JudgementStatus.fromStatus(judgementStatus);
+            judgementStatus = judgementStatus.toUpperCase(); 
+        }
+
+        return repository.findByUsernameAndBanTypeAndJudgmentStatus(
+            username,
+            banType, 
+            judgementStatus, 
+            PageRequest.of(pageCount - 1, pageSize));
     }
 }

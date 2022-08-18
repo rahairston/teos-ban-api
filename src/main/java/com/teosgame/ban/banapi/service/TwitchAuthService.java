@@ -79,7 +79,7 @@ public class TwitchAuthService {
             RequestContextHolder.currentRequestAttributes();
         HttpSession session = attr.getRequest().getSession(true);
 
-        TwitchUserInfo userInfo = TwitchUserInfo.fromClaims(jwtValidator.validateAndParse(token.getId_token()));
+        TwitchUserInfo userInfo = twitchClient.getUserInfo(token.getAccess_token());
 
         redisClient.setValue(userInfo.getPreferred_username().toLowerCase(), session.getId());
         
