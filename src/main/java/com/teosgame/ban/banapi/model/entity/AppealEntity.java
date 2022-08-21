@@ -75,7 +75,7 @@ public class AppealEntity extends BaseDBObject {
     @OneToMany(mappedBy="appeal", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
     List<EvidenceEntity> evidence;
 
-    @OneToOne(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER, orphanRemoval = true, cascade=CascadeType.ALL)
     @JoinColumn(name = "JUDGEMENT_ID")
     JudgementEntity judgement;
 

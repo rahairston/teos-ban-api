@@ -9,7 +9,6 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -31,8 +30,8 @@ public class JudgementEntity extends BaseDBObject {
     @Column(name = "JUDGEMENT_ID", unique = true, length=36)
     private final String id = UUID.randomUUID().toString();
 
-    @JoinColumn(name="APPEAL_ID", nullable = false)
-    @OneToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name="APPEAL_ID", nullable = false)
+    @OneToOne(mappedBy="judgement", fetch = FetchType.LAZY)
     AppealEntity appeal;
 
     @Column(name="STATUS", nullable = false, length=21)

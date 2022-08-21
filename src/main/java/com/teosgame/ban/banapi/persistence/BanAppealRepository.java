@@ -29,4 +29,10 @@ public interface BanAppealRepository extends PagingAndSortingRepository<AppealEn
     @Query(value = "select COUNT(a.APPEAL_ID) from APPEALS a LEFT JOIN JUDGEMENT j on a.JUDGEMENT_ID = j.JUDGEMENT_ID " +
             "where a.TWITCH_USERNAME=:username AND j.STATUS in ('PENDING', 'REVIEWING')", nativeQuery = true)
     public int countPendingByUsername(@Param("username") String username);
+
+    //make query to get "next" id 
+    // date < date > and equal status
+    // @Query(value = "select COUNT(a.APPEAL_ID) from APPEALS a LEFT JOIN JUDGEMENT j on a.JUDGEMENT_ID = j.JUDGEMENT_ID " +
+    //         "where a.TWITCH_USERNAME=:username AND j.STATUS in ('PENDING', 'REVIEWING')", nativeQuery = true)
+    // public AppealEntity findAppealEntityBy();
 }
