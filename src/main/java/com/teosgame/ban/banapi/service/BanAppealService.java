@@ -184,7 +184,6 @@ public class BanAppealService {
         }
 
         if (judgementStatus != null) {
-            logger.info("\n\n\n{}\n\n\n", judgementStatus);
             JudgementStatus.fromStatus(judgementStatus);
             judgementStatus = judgementStatus.toUpperCase().replace(" ", "_"); 
         }
