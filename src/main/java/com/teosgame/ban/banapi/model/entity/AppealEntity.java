@@ -116,6 +116,6 @@ public class AppealEntity extends BaseDBObject {
         }
 
         modifiedAt = new Date();
-        modifiedBy = twitchUsername;
+        modifiedBy = username;
     }
 }

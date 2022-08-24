@@ -62,8 +62,11 @@ public class BanAppealValidator {
         }
 
         if (!utils.isUserAdmin()) {
+            if (!entity.getTwitchUsername().equalsIgnoreCase(request.getTwitchUsername())) {
+              throw new BadRequestException("User cannot change the Twitch username on the appeal.");
+            }  
             if (!entity.getTwitchUsername().equalsIgnoreCase(twitchUsername)) {
-                throw new BadRequestException("User updating ban does not match user name in appeal");
+                throw new BadRequestException("User updating ban does not match user name in appeal.");
             }  
 
             if (!entity.getJudgement().getStatus().isPending()) {

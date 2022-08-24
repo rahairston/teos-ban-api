@@ -31,8 +31,15 @@ public class BanAppealResponse {
     ////////////////// ADMIN VARIABLES //////////////////
     List<EvidenceResponse> evidence;
     JudgementResponse judgement;
+    ////////////////// PAGING VARIABLES //////////////////
+    String prevPageId;
+    String nextPageId;
 
-    public static BanAppealResponse fromEntity(AppealEntity entity, String previousId, List<EvidenceResponse> evidence) {
+    public static BanAppealResponse fromEntity(AppealEntity entity, 
+        String previousId, 
+        List<EvidenceResponse> evidence,
+        String prevPageId,
+        String nextPageId) {
         return BanAppealResponse.builder()
             .appealId(entity.getId())
             .twitchUsername(entity.getTwitchUsername())
@@ -46,6 +53,8 @@ public class BanAppealResponse {
             .additionalData(entity.getAdditionalData())
             .evidence(evidence)
             .judgement(new JudgementResponse(entity.getJudgement()))
+            .prevPageId(prevPageId)
+            .nextPageId(nextPageId)
         .build();
     }
 }

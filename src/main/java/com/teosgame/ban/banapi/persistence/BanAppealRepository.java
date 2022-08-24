@@ -1,6 +1,8 @@
 package com.teosgame.ban.banapi.persistence;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +18,7 @@ public interface BanAppealRepository extends PagingAndSortingRepository<AppealEn
     public List<AppealEntity> findByTwitchUsername(String twitchUsername);
     @Query(value = "select * from APPEALS a LEFT JOIN JUDGEMENT j on a.JUDGEMENT_ID = j.JUDGEMENT_ID " +
             "where (:status is null or j.STATUS=:status) and (:type is null or a.BAN_TYPE=:type) and " +
-            "(:username is null or a.TWITCH_USERNAME=:username)", nativeQuery = true,
+            "(:username is null or a.TWITCH_USERNAME=:username) ORDER BY a.CREATED_AT", nativeQuery = true,
             countQuery = "select COUNT(a.APPEAL_ID) from APPEALS a LEFT JOIN JUDGEMENT j on a.JUDGEMENT_ID = j.JUDGEMENT_ID " +
             "where (:status is null or j.STATUS=:status) and (:type is null or a.BAN_TYPE=:type) and " +
             "(:username is null or a.TWITCH_USERNAME=:username)")
@@ -30,9 +32,11 @@ public interface BanAppealRepository extends PagingAndSortingRepository<AppealEn
             "where a.TWITCH_USERNAME=:username AND j.STATUS in ('PENDING', 'REVIEWING')", nativeQuery = true)
     public int countPendingByUsername(@Param("username") String username);
 
-    //make query to get "next" id 
-    // date < date > and equal status
-    // @Query(value = "select COUNT(a.APPEAL_ID) from APPEALS a LEFT JOIN JUDGEMENT j on a.JUDGEMENT_ID = j.JUDGEMENT_ID " +
-    //         "where a.TWITCH_USERNAME=:username AND j.STATUS in ('PENDING', 'REVIEWING')", nativeQuery = true)
-    // public AppealEntity findAppealEntityBy();
+    // For getting the next and previous pages
+    @Query(value = "select APPEAL_ID from APPEALS " +
+            "where CREATED_AT < :date LIMIT 1", nativeQuery = true)
+    public Optional<String> findAppealIdBefore(Date date);
+    @Query(value = "select APPEAL_ID from APPEALS " +
+            "where CREATED_AT > :date LIMIT 1", nativeQuery = true)
+    public Optional<String> findAppealIdAfter(Date date);
 }

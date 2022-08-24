@@ -72,6 +72,7 @@ public class BanAppealService {
             entities.stream().map(entity -> {
               return BanAppealResponse.builder()
                   .appealId(entity.getId())
+                  .banType(entity.getBanType())
                   .judgement(new JudgementResponse(entity.getJudgement()))
               .build();
           }).collect(Collectors.toList())
@@ -90,6 +91,8 @@ public class BanAppealService {
         validator.validateGetRequest(entity, appealId, twitchUsername);
 
         List<EvidenceResponse> evidence = null;
+        String prevPageId = null;
+        String nextPageId = null;
 
         // Admins can view all and submitters can view their own appeals
         if (utils.isUserAdmin() && entity.getEvidence() != null) { // only admins can see evidence
@@ -97,11 +100,14 @@ public class BanAppealService {
                 String filePath = entity.getId() + "/evidence/" + evidenceEntity.getId() + evidenceEntity.getFileExtension();
                 return new EvidenceResponse(evidenceEntity, evidenceEntity.getBannedBy(), s3Service.generatePreSignedUrl(filePath, HttpMethod.GET).toString());
             }).collect(Collectors.toList());
+
+            prevPageId = repository.findAppealIdBefore(entity.getCreatedAt()).orElse(null);
+            nextPageId = repository.findAppealIdAfter(entity.getCreatedAt()).orElse(null);
         }
 
         String previousId = entity.getPrevious() != null ? entity.getPrevious().getId() : null;
 
-        return BanAppealResponse.fromEntity(entity, previousId, evidence);
+        return BanAppealResponse.fromEntity(entity, previousId, evidence, prevPageId, nextPageId);
     }
     
     public String createBanAppeal(CreateBanAppealRequest request) 
@@ -178,8 +184,9 @@ public class BanAppealService {
         }
 
         if (judgementStatus != null) {
+            logger.info("\n\n\n{}\n\n\n", judgementStatus);
             JudgementStatus.fromStatus(judgementStatus);
-            judgementStatus = judgementStatus.toUpperCase(); 
+            judgementStatus = judgementStatus.toUpperCase().replace(" ", "_"); 
         }
 
         return repository.findByUsernameAndBanTypeAndJudgmentStatus(
