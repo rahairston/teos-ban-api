@@ -26,8 +26,8 @@ import com.teosgame.ban.banapi.model.response.BanAppealsResponse;
 import com.teosgame.ban.banapi.service.BanAppealService;
 
 @RestController
-@RequestMapping("/appeals")
-public class BanAppealController {
+@RequestMapping("/appeals/{appealId}/evidence")
+public class EvidenceController {
 
     @Autowired
     private BanAppealService service;
@@ -42,14 +42,16 @@ public class BanAppealController {
         return ResponseEntity.ok(service.getBanAppeals(username, banType, judgementStatus, pageCount, pageSize));
     }
 
-    @GetMapping(value = "/{appealId}", produces = "application/json")
-    public ResponseEntity<BanAppealResponse> getBanAppealbyId(@PathVariable String appealId) 
+    @GetMapping(value = "/{evidenceId}", produces = "application/json")
+    public ResponseEntity<BanAppealResponse> getBanAppealbyId(@PathVariable String appealId, @PathVariable String evidenceId) 
         throws NotFoundException, ForbiddenException {
         return ResponseEntity.ok(service.getBanAppeal(appealId));
     }
 
-    @PutMapping(value = "/{appealId}", produces = "application/json")
-    public ResponseEntity<BanAppealResponse> updateBanAppealbyId(@PathVariable String appealId, @RequestBody UpdateBanAppealRequest request) 
+    @PutMapping(value = "/{evidenceId}", produces = "application/json")
+    public ResponseEntity<BanAppealResponse> updateBanAppealbyId(@PathVariable String appealId,
+        @PathVariable String evidenceId, 
+        @RequestBody UpdateBanAppealRequest request) 
         throws NotFoundException, ForbiddenException, BadRequestException {
         service.updateBanAppeal(appealId, request);
         return ResponseEntity.noContent().build();
@@ -64,8 +66,8 @@ public class BanAppealController {
         return ResponseEntity.created(location).build();
     }
 
-    @DeleteMapping(value = "/{appealId}", produces = "application/json")
-    public ResponseEntity<BanAppealResponse> deleteAppeal(@PathVariable String appealId) 
+    @DeleteMapping(value = "/{evidenceId}", produces = "application/json")
+    public ResponseEntity<BanAppealResponse> deleteAppeal(@PathVariable String appealId, @PathVariable String evidenceId) 
         throws NotFoundException, ForbiddenException, BadRequestException {
         service.deleteBanAppeal(appealId);
         return ResponseEntity.noContent().build();
