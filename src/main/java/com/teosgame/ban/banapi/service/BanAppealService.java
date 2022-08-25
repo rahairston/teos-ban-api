@@ -22,6 +22,7 @@ import com.teosgame.ban.banapi.model.request.CreateBanAppealRequest;
 import com.teosgame.ban.banapi.model.request.UpdateBanAppealRequest;
 import com.teosgame.ban.banapi.model.response.BanAppealResponse;
 import com.teosgame.ban.banapi.model.response.BanAppealsResponse;
+import com.teosgame.ban.banapi.model.response.BannedByResponse;
 import com.teosgame.ban.banapi.model.response.EvidenceResponse;
 import com.teosgame.ban.banapi.model.response.JudgementResponse;
 import com.teosgame.ban.banapi.persistence.BanAppealRepository;
@@ -91,15 +92,25 @@ public class BanAppealService {
         validator.validateGetRequest(entity, appealId, twitchUsername);
 
         List<EvidenceResponse> evidence = null;
+        List<BannedByResponse> bannedBy = null;
         String prevPageId = null;
         String nextPageId = null;
 
         // Admins can view all and submitters can view their own appeals
-        if (utils.isUserAdmin() && entity.getEvidence() != null) { // only admins can see evidence
-            evidence = entity.getEvidence().stream().map(evidenceEntity -> {
-                String filePath = entity.getId() + "/evidence/" + evidenceEntity.getId() + evidenceEntity.getFileExtension();
-                return new EvidenceResponse(evidenceEntity, evidenceEntity.getBannedBy(), s3Service.generatePreSignedUrl(filePath, HttpMethod.GET).toString());
-            }).collect(Collectors.toList());
+        if (utils.isUserAdmin()) { // only admins can see evidence
+
+            if (entity.getEvidence() != null) {
+                evidence = entity.getEvidence().stream().map(evidenceEntity -> {
+                    String filePath = entity.getId() + "/evidence/" + evidenceEntity.getId() + evidenceEntity.getFileExtension();
+                    return new EvidenceResponse(evidenceEntity, s3Service.generatePreSignedUrl(filePath, HttpMethod.GET).toString());
+                }).collect(Collectors.toList());
+            }
+
+            if (entity.getBannedBy() != null) {
+                bannedBy = entity.getBannedBy().stream().map(bannedByEntity -> {
+                  return new BannedByResponse(bannedByEntity);
+                }).collect(Collectors.toList());
+            }
 
             prevPageId = repository.findAppealIdBefore(entity.getCreatedAt()).orElse(null);
             nextPageId = repository.findAppealIdAfter(entity.getCreatedAt()).orElse(null);
@@ -107,7 +118,7 @@ public class BanAppealService {
 
         String previousId = entity.getPrevious() != null ? entity.getPrevious().getId() : null;
 
-        return BanAppealResponse.fromEntity(entity, previousId, evidence, prevPageId, nextPageId);
+        return BanAppealResponse.fromEntity(entity, previousId, evidence, bannedBy, prevPageId, nextPageId);
     }
     
     public String createBanAppeal(CreateBanAppealRequest request) 

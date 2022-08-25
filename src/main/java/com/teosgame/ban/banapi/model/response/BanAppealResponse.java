@@ -31,6 +31,7 @@ public class BanAppealResponse {
     ////////////////// ADMIN VARIABLES //////////////////
     List<EvidenceResponse> evidence;
     JudgementResponse judgement;
+    List<BannedByResponse> bannedBy;
     ////////////////// PAGING VARIABLES //////////////////
     String prevPageId;
     String nextPageId;
@@ -38,6 +39,7 @@ public class BanAppealResponse {
     public static BanAppealResponse fromEntity(AppealEntity entity, 
         String previousId, 
         List<EvidenceResponse> evidence,
+        List<BannedByResponse> bannedBy,
         String prevPageId,
         String nextPageId) {
         return BanAppealResponse.builder()
@@ -55,6 +57,7 @@ public class BanAppealResponse {
             .judgement(new JudgementResponse(entity.getJudgement()))
             .prevPageId(prevPageId)
             .nextPageId(nextPageId)
+            .bannedBy(bannedBy)
         .build();
     }
 }

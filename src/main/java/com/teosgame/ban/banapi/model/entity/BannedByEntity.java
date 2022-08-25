@@ -33,7 +33,7 @@ public class BannedByEntity {
     @Column(nullable = false, length=20)
     String banDate;
 
-    @JoinColumn(name="evidence_id", nullable = false)
+    @JoinColumn(name="appeal_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    EvidenceEntity evidence;
+    AppealEntity appeal;
 }

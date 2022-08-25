@@ -79,6 +79,10 @@ public class AppealEntity extends BaseDBObject {
     @JoinColumn(name = "JUDGEMENT_ID")
     JudgementEntity judgement;
 
+    @Column(nullable = true)
+    @OneToMany(mappedBy="appeal", fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
+    List<BannedByEntity> bannedBy;
+
     public static AppealEntity fromRequest(CreateBanAppealRequest request, AppealEntity previous, String additionalData) {
         return AppealEntity.builder()
             .twitchUsername(request.getTwitchUsername())
