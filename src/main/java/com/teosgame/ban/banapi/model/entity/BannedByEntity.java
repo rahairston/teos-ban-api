@@ -11,6 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,9 +22,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity
 @Table(name = "BANNED_BY")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class BannedByEntity {
     @Id
     @Column(name = "BANNED_BY_ID", unique = true, length=36)
+    @EqualsAndHashCode.Include
     private final String id = UUID.randomUUID().toString();
 
     @Column(nullable = false, columnDefinition = "TINYTEXT")

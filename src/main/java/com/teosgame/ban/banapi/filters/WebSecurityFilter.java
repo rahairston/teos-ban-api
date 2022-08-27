@@ -39,6 +39,7 @@ public class WebSecurityFilter {
             .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
             .antMatchers( "/actuator/health", "/auth/**", "/error", "/h2-console/**").permitAll()
             .antMatchers("/actuator/**").hasRole("DEVELOPER")
+            .antMatchers("/bannedBy/**", "/evidence/**", "/judgement/**").hasRole("ADMIN")
             .anyRequest().authenticated()
             .and()
             .build();
