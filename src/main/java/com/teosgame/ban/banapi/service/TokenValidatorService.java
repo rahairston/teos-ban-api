@@ -36,6 +36,8 @@ public class TokenValidatorService {
             TwitchTokenValidateResponse response = client.validateToken(tokenValue);
             List<SimpleAuthority> authorities = getUserAuthorities(response.getLogin());
 
+            logger.info("Token Validation for {} with roles {}", response.getLogin(), authorities.toString());
+
             return new UserAuth(authorities, tokenValue, sessionId, response.getLogin(), true);
         } catch (InvalidTokenException e) {
             logger.error(e.getMessage());

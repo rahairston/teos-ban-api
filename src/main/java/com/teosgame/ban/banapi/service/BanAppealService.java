@@ -98,7 +98,6 @@ public class BanAppealService {
 
         // Admins can view all and submitters can view their own appeals
         if (utils.isUserAdmin()) { // only admins can see evidence
-
             if (entity.getEvidence() != null) {
                 evidence = entity.getEvidence().stream().map(evidenceEntity -> {
                     String filePath = entity.getId() + "/evidence/" + evidenceEntity.getId() + evidenceEntity.getFileExtension();

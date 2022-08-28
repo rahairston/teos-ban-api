@@ -122,4 +122,12 @@ public class AppealEntity extends BaseDBObject {
         modifiedAt = new Date();
         modifiedBy = username;
     }
+
+    public void addBannedBy(BannedByEntity entity) {
+        bannedBy.add(entity);
+    }
+
+    public void removeBannedBy(BannedByEntity entity) {
+      bannedBy.remove(entity);
+  }
 }

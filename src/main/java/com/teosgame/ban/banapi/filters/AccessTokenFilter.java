@@ -54,7 +54,7 @@ public class AccessTokenFilter extends AbstractAuthenticationProcessingFilter {
     public Authentication attemptAuthentication(HttpServletRequest request,
             HttpServletResponse response) throws AuthenticationException {
 
-        logger.info("Attempting to authenticate for a request {}", request.getRequestURI());
+        logger.debug("Attempting to authenticate for a request {}", request.getRequestURI());
 
         String authorizationHeader = extractAuthorizationHeaderAsString(request);
         return this.getAuthenticationManager()
@@ -67,7 +67,7 @@ public class AccessTokenFilter extends AbstractAuthenticationProcessingFilter {
             FilterChain chain,
             Authentication authResult) throws IOException, ServletException {
 
-        logger.info("Successfully authentication for the request {}", request.getRequestURI());
+        logger.debug("Successfully authentication for the request {}", request.getRequestURI());
 
         SecurityContextHolder.getContext().setAuthentication(authResult);
         chain.doFilter(request, response);

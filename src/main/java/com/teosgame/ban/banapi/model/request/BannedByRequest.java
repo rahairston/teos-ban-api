@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class BannedByRequest {
 
-  String id;
+  String bannedById;
   BannedByAction action;
 
   @NotNull(message="Please provide a Username for who banned it.")
