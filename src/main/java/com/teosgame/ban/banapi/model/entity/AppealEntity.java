@@ -128,6 +128,14 @@ public class AppealEntity extends BaseDBObject {
     }
 
     public void removeBannedBy(BannedByEntity entity) {
-      bannedBy.remove(entity);
+        bannedBy.remove(entity);
+    }
+
+    public void addEvidence(EvidenceEntity entity) {
+      evidence.add(entity);
+  }
+
+  public void removeEvidence(EvidenceEntity entity) {
+      evidence.remove(entity);
   }
 }

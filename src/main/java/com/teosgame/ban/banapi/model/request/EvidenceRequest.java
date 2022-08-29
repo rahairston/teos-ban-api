@@ -14,9 +14,9 @@ import lombok.NoArgsConstructor;
 @JsonAutoDetect
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CreateEvidenceRequest {
+public class EvidenceRequest {
 
-  @NotNull(message="Please provide a Twitch Username.")
+  @NotNull(message="Please provide a file name.")
   String fileName;
 
   String notes;

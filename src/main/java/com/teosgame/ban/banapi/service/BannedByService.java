@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 public class BannedByService {
 
   private final BanUtils utils;
-  private final BanAppealRepository appealRepository;
+  private final BanAppealRepository repository;
 
   Logger logger = LoggerFactory.getLogger(BannedByService.class);
 
@@ -35,7 +35,7 @@ public class BannedByService {
           throw new ForbiddenException("Only admins can get Banned By data");
       }
 
-      AppealEntity entity = appealRepository.findById(appealId).orElse(null);
+      AppealEntity entity = repository.findById(appealId).orElse(null);
 
       if (entity == null) {
           throw new NotFoundException("Appeal with ID " + appealId + " not found");
@@ -63,7 +63,7 @@ public class BannedByService {
           }
       });
 
-      appealRepository.save(entity);
+      repository.save(entity);
   }
 
   private BannedByRequest getRequestFromListById(List<BannedByRequest> requests, String id) {

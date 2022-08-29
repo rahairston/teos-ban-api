@@ -10,6 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,9 +22,11 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @Entity
 @Table(name = "EVIDENCE")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 public class EvidenceEntity extends BaseDBObject {
     @Id
     @Column(name = "EVIDENCE_ID", unique = true, length=36)
+    @EqualsAndHashCode.Include
     private final String id = UUID.randomUUID().toString();
 
     @JoinColumn(name="appeal_id", nullable = false)
