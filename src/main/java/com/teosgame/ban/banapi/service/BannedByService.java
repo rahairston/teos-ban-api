@@ -1,5 +1,6 @@
 package com.teosgame.ban.banapi.service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,6 +63,10 @@ public class BannedByService {
               entity.addBannedBy(bannedByEntity);
           }
       });
+
+      entity.setModifiedAt(new Date());
+      entity.setModifiedBy(SecurityContextHolder.getContext()
+          .getAuthentication().getName());
 
       repository.save(entity);
   }

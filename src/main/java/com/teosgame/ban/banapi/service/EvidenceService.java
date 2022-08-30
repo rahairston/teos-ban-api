@@ -1,13 +1,13 @@
 package com.teosgame.ban.banapi.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.amazonaws.HttpMethod;
 import com.teosgame.ban.banapi.exception.BadRequestException;
 import com.teosgame.ban.banapi.exception.ForbiddenException;
 import com.teosgame.ban.banapi.exception.NotFoundException;
@@ -26,37 +26,81 @@ public class EvidenceService {
 
     private final BanUtils utils;
     private final BanAppealRepository repository;
+    private final S3Service service;
 
     Logger logger = LoggerFactory.getLogger(EvidenceService.class);
 
-    public EvidenceResponse getEvidence(String appealId) throws NotFoundException, ForbiddenException {
-        if (!utils.isUserAdmin()) {
-            logger.error("User {} attempted to modify banned by data", SecurityContextHolder.getContext()
-                    .getAuthentication().getName());
-            throw new ForbiddenException("Only admins can get Banned By data");
+    public EvidenceResponse getEvidence(String appealId, String evidenceId) throws NotFoundException, ForbiddenException {
+        AppealEntity entity = preEvidenceCheck(appealId);
+
+        EvidenceEntity evidence = entity.getEvidence().stream().filter(e -> {
+          return e.getId().equalsIgnoreCase(evidenceId);
+        }).findFirst().orElse(null);
+
+        if (evidence == null) {
+            throw new NotFoundException("Evidence with ID " + evidenceId + " not found.");
         }
 
-        AppealEntity entity = repository.findById(appealId).orElse(null);
+        String filePath = entity.getTwitchUsername() + "/" + entity.getId() + "/" + evidenceId + "." + evidence.getFileExtension();
 
-        return null;
+        return new EvidenceResponse(evidence, service.generatePreSignedUrl(filePath, HttpMethod.GET).toString());
     }
 
-    public String createEvidence(String appealId, EvidenceRequest request)
+    public EvidenceResponse createEvidence(String appealId, EvidenceRequest request)
             throws ForbiddenException, NotFoundException {
 
         AppealEntity entity = preEvidenceCheck(appealId);
 
-        return "";
+        EvidenceEntity evidence = EvidenceEntity.builder()
+            .appeal(entity)
+            .notes(request.getNotes())
+            .fileExtension(getFileExtension(request.getFileName()))
+            .build();
+
+        entity.addEvidence(evidence);
+
+        repository.save(entity);
+
+        String filePath = entity.getTwitchUsername() + "/" + entity.getId() + "/" + evidence.getId() + "." + evidence.getFileExtension();
+
+        return new EvidenceResponse(evidence, service.generatePreSignedUrl(filePath, HttpMethod.PUT).toString());
     }
 
-    public void updateEvidence(String appealId, String evidenceId, EvidenceRequest request)
+    public EvidenceResponse updateEvidence(String appealId, String evidenceId, EvidenceRequest request)
             throws BadRequestException, NotFoundException, ForbiddenException {
         AppealEntity entity = preEvidenceCheck(appealId);
 
-        entity = repository.save(entity);
+        EvidenceEntity evidence = entity.getEvidence().stream().filter(e -> {
+          return e.getId().equalsIgnoreCase(evidenceId);
+        }).findFirst().orElse(null);
+
+        if (evidence == null) {
+            throw new NotFoundException("Evidence with ID " + evidenceId + " not found");
+        }
+
+        if (request.getFileName() != null) {
+            evidence.setFileExtension(getFileExtension(request.getFileName()));
+        }
+
+        if (request.getNotes() != null) {
+            evidence.setNotes(request.getNotes());
+        }
+
+        evidence.setModifiedAt(new Date());
+        entity.setModifiedAt(new Date());
+        evidence.setModifiedBy(SecurityContextHolder.getContext()
+        .getAuthentication().getName());
+        entity.setModifiedBy(SecurityContextHolder.getContext()
+        .getAuthentication().getName());
+
+        repository.save(entity);
+
+        String filePath = entity.getTwitchUsername() + "/" + entity.getId() + "/" + evidence.getId() + "." + evidence.getFileExtension();
+
+        return new EvidenceResponse(evidence, service.generatePreSignedUrl(filePath, HttpMethod.PUT).toString());
     }
 
-    public void deleteEvidence(String appealId, String evidenceId)
+    public EvidenceResponse deleteEvidence(String appealId, String evidenceId)
             throws ForbiddenException, NotFoundException {
 
         AppealEntity entity = preEvidenceCheck(appealId);
@@ -72,13 +116,17 @@ public class EvidenceService {
         entity.removeEvidence(deleted);
 
         repository.save(entity);
+
+        String filePath = entity.getTwitchUsername() + "/" + entity.getId() + "/" + deleted.getId() + "." + deleted.getFileExtension();
+
+        return new EvidenceResponse(deleted, service.generatePreSignedUrl(filePath, HttpMethod.DELETE).toString());
     }
 
     private AppealEntity preEvidenceCheck(String appealId) throws ForbiddenException, NotFoundException {
         if (!utils.isUserAdmin()) {
-          logger.error("User {} attempted to modify banned by data", SecurityContextHolder.getContext()
+          logger.error("User {} attempted to modify or get evidence data", SecurityContextHolder.getContext()
                   .getAuthentication().getName());
-            throw new ForbiddenException("Only admins can get Banned By data");
+            throw new ForbiddenException("Only admins can modify or get evidence data.");
         }
 
         AppealEntity entity = repository.findById(appealId).orElse(null);
@@ -88,6 +136,19 @@ public class EvidenceService {
         }
 
         return entity;
+    }
+
+    private String getFileExtension(String fileName) {
+        String extension = "";
+
+        int i = fileName.lastIndexOf('.');
+        int p = Math.max(fileName.lastIndexOf('/'), fileName.lastIndexOf('\\'));
+
+        if (i > p) {
+            extension = fileName.substring(i+1);
+        }
+
+        return extension;
     }
 
 }
