@@ -55,13 +55,14 @@ public class EvidenceService {
             .appeal(entity)
             .notes(request.getNotes())
             .fileExtension(getFileExtension(request.getFileName()))
+            .createdBy(SecurityContextHolder.getContext().getAuthentication().getName())
             .build();
 
         entity.addEvidence(evidence);
 
         repository.save(entity);
 
-        String filePath = entity.getTwitchUsername() + "/" + entity.getId() + "/" + evidence.getId() + "." + evidence.getFileExtension();
+        String filePath = entity.getTwitchUsername() + "/" + entity.getId() + "/" + evidence.getId();
 
         return new EvidenceResponse(evidence, service.generatePreSignedUrl(filePath, HttpMethod.PUT).toString());
     }
