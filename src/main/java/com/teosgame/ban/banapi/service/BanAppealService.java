@@ -100,7 +100,7 @@ public class BanAppealService {
         if (utils.isUserAdmin()) { // only admins can see evidence
             if (entity.getEvidence() != null) {
                 evidence = entity.getEvidence().stream().map(evidenceEntity -> {
-                    String filePath = entity.getId() + "/evidence/" + evidenceEntity.getId() + evidenceEntity.getFileExtension();
+                    String filePath = entity.getTwitchUsername() + "/" + entity.getId() + "/" + evidenceEntity.getId() + "." + evidenceEntity.getFileExtension();
                     return new EvidenceResponse(evidenceEntity, s3Service.generatePreSignedUrl(filePath, HttpMethod.GET).toString());
                 }).collect(Collectors.toList());
             }

@@ -13,6 +13,7 @@ import com.teosgame.ban.banapi.exception.ForbiddenException;
 import com.teosgame.ban.banapi.exception.NotFoundException;
 import com.teosgame.ban.banapi.model.entity.AppealEntity;
 import com.teosgame.ban.banapi.model.entity.BannedByEntity;
+import com.teosgame.ban.banapi.model.enums.JudgementStatus;
 import com.teosgame.ban.banapi.model.request.BannedByRequest;
 import com.teosgame.ban.banapi.model.request.BannedBysRequest;
 import com.teosgame.ban.banapi.persistence.BanAppealRepository;
@@ -40,6 +41,10 @@ public class BannedByService {
 
       if (entity == null) {
           throw new NotFoundException("Appeal with ID " + appealId + " not found");
+      }
+
+      if (entity.getJudgement().getStatus().isPending()) {
+        entity.getJudgement().setStatus(JudgementStatus.REVIEWING);
       }
 
       List<BannedByEntity> removingEntities = entity.getBannedBy().stream().filter(item -> {

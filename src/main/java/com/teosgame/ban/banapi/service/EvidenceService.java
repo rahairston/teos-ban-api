@@ -13,6 +13,7 @@ import com.teosgame.ban.banapi.exception.ForbiddenException;
 import com.teosgame.ban.banapi.exception.NotFoundException;
 import com.teosgame.ban.banapi.model.entity.AppealEntity;
 import com.teosgame.ban.banapi.model.entity.EvidenceEntity;
+import com.teosgame.ban.banapi.model.enums.JudgementStatus;
 import com.teosgame.ban.banapi.model.request.EvidenceRequest;
 import com.teosgame.ban.banapi.model.response.EvidenceResponse;
 import com.teosgame.ban.banapi.persistence.BanAppealRepository;
@@ -51,6 +52,10 @@ public class EvidenceService {
 
         AppealEntity entity = preEvidenceCheck(appealId);
 
+        if (entity.getJudgement().getStatus().isPending()) {
+          entity.getJudgement().setStatus(JudgementStatus.REVIEWING);
+        }
+
         EvidenceEntity evidence = EvidenceEntity.builder()
             .appeal(entity)
             .notes(request.getNotes())
@@ -62,7 +67,7 @@ public class EvidenceService {
 
         repository.save(entity);
 
-        String filePath = entity.getTwitchUsername() + "/" + entity.getId() + "/" + evidence.getId();
+        String filePath = entity.getTwitchUsername() + "/" + entity.getId() + "/" + evidence.getId() + "." + evidence.getFileExtension();
 
         return new EvidenceResponse(evidence, service.generatePreSignedUrl(filePath, HttpMethod.PUT).toString());
     }

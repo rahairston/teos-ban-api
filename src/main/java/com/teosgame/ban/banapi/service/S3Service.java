@@ -32,7 +32,11 @@ public class S3Service {
                                        HttpMethod httpMethod) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
-        calendar.add(Calendar.MINUTE, 1); //validity of 1 minute
+        if (httpMethod.equals(HttpMethod.GET)) {
+          calendar.add(Calendar.MINUTE, 30); //GET for 30 minutes
+        } else {
+          calendar.add(Calendar.MINUTE, 1); //validity of 1 minute
+        }
         return client.generatePresignedUrl(config.getBucketName(), config.getFileBasePath() + filePath, calendar.getTime(), httpMethod);
     }
 }
