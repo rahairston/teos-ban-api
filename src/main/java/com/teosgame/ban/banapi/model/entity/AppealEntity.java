@@ -133,9 +133,9 @@ public class AppealEntity extends BaseDBObject {
 
     public void addEvidence(EvidenceEntity entity) {
       evidence.add(entity);
-  }
+    }
 
-  public void removeEvidence(EvidenceEntity entity) {
-      evidence.remove(entity);
-  }
+    public void removeEvidence(EvidenceEntity entity) {
+        evidence.remove(entity);
+    }
 }

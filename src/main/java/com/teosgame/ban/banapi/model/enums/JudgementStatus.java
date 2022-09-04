@@ -13,7 +13,7 @@ public enum JudgementStatus {
         this.status = status;
     }
 
-    public static JudgementStatus fromStatus(String status) throws BadRequestException{
+    public static JudgementStatus fromStatus(String status) throws BadRequestException {
         if (status == null) {
             return null;
         }
