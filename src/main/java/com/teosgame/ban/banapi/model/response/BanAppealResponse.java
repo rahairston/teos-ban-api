@@ -29,6 +29,7 @@ public class BanAppealResponse {
     String previousAppealId;
     String additionalData;
     ////////////////// ADMIN VARIABLES //////////////////
+    String adminNotes;
     List<EvidenceResponse> evidence;
     JudgementResponse judgement;
     List<BannedByResponse> bannedBy;
@@ -51,6 +52,7 @@ public class BanAppealResponse {
             .banJustified(entity.getBanJustified())
             .appealReason(entity.getAppealReason())
             .additionalNotes(entity.getAdditionalNotes())
+            .adminNotes(entity.getAdminNotes())
             .previousAppealId(previousId)
             .additionalData(entity.getAdditionalData())
             .evidence(evidence)

@@ -15,7 +15,7 @@ import com.teosgame.ban.banapi.model.entity.AppealEntity;
 
 @Repository
 public interface BanAppealRepository extends PagingAndSortingRepository<AppealEntity, String> {
-    public List<AppealEntity> findByTwitchUsername(String twitchUsername);
+    public List<AppealEntity> findByTwitchUsernameIgnoreCase(String twitchUsername);
     @Query(value = "select * from APPEALS a LEFT JOIN JUDGEMENT j on a.JUDGEMENT_ID = j.JUDGEMENT_ID " +
             "where (:status is null or j.STATUS=:status) and (:type is null or a.BAN_TYPE=:type) and " +
             "(:username is null or a.TWITCH_USERNAME=:username) ORDER BY a.CREATED_AT", nativeQuery = true,

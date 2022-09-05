@@ -59,7 +59,14 @@ public class BanAppealService {
 
         if (!utils.isUserAdmin()) {
             // Since users probably won't have 100 appeals, we won't let them filter it out at all
-            entities = repository.findByTwitchUsername(twitchUsername);
+            entities = repository.findByTwitchUsernameIgnoreCase(twitchUsername).stream().filter(entity -> {
+              // we only query judgement status on a resubmission check              
+              if (judgementStatus != null) {
+                  return entity.getJudgement().isResubmittable();
+              } else {
+                  return true;
+              }
+            }).collect(Collectors.toList());
             totalSize = entities.size();
             totalPages = totalSize / pageSize;
         } else { // only admins can see evidence
@@ -168,7 +175,7 @@ public class BanAppealService {
 
         entity.updateEntityFromRequest(request, twitchUsername);
 
-        entity = repository.save(entity);;
+        repository.save(entity);
     }
 
     public void deleteBanAppeal(String appealId)
@@ -202,6 +209,6 @@ public class BanAppealService {
             username,
             banType, 
             judgementStatus, 
-            PageRequest.of(pageCount - 1, pageSize));
+            PageRequest.of(pageCount, pageSize));
     }
 }
