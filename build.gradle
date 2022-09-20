@@ -39,6 +39,7 @@ dependencies {
 	implementation 'org.hibernate:hibernate-validator:6.0.13.Final'
 	implementation 'com.h2database:h2'
 	implementation 'com.amazonaws:aws-java-sdk-s3:1.11.64'
+  implementation 'com.amazonaws.secretsmanager:aws-secretsmanager-caching-java:1.0.1'
 	implementation 'io.awspring.cloud:spring-cloud-starter-aws'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'

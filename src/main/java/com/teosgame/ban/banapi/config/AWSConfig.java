@@ -7,10 +7,7 @@ import lombok.Getter;
 
 @Configuration
 @Getter
-public class S3Config {
-    @Value("${cloud.aws.s3.bucketName}")
-    private String bucketName;
-
-    @Value("${cloud.aws.s3.fileBasePath}")
-    private String fileBasePath;
+public class AWSConfig {
+    @Value("${cloud.aws.regionName}")
+    private String regionName;
 }

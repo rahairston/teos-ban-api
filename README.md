@@ -22,7 +22,7 @@ This does assume that EC2 will tbe the way to go (given the Java direction this 
 
 ### Security Groups
 
-- Security groups will be necessary for API to Redis/RDS/Load Balancer connections
+- Security groups will be necessary for API to RDS/Load Balancer connections
 
 ### S3
 
@@ -36,4 +36,5 @@ This does assume that EC2 will tbe the way to go (given the Java direction this 
 
 ### RDS
 
-tbd
+#### Addiung Schema
+Once RDS is created, connect to the RDS instance and apply the `create.sql` file.
