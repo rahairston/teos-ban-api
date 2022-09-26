@@ -80,8 +80,18 @@
     "description": "A description for 'cloud.aws.regionName'"
   },
   {
-    "name": "cloud.aws.secrets.secret-name",
+    "name": "cloud.aws.secrets.twitch",
     "type": "java.lang.String",
-    "description": "A description for 'cloud.aws.secrets.secret-name'"
+    "description": "A description for 'cloud.aws.secrets.twitch'"
+  },
+  {
+    "name": "cloud.aws.secrets.mysql",
+    "type": "java.lang.String",
+    "description": "A description for 'cloud.aws.secrets.mysql'"
+  },
+  {
+    "name": "spring.datasource.dbName",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.datasource.dbName'"
   }
 ]}

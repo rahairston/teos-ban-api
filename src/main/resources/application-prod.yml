@@ -1,0 +1,16 @@
+spring:
+    datasource:
+        dbName: bandb
+        driverClassName: com.mysql.jdbc.Driver
+
+ban:
+    teo:
+        redirect_uris: "http://localhost:3000"
+        allowed_origins: "http://localhost:3000"
+        redis:
+            host: redis
+
+cloud:
+    aws:
+        s3:
+            bucketName: teos-prod-bucket-457125958973

@@ -16,10 +16,10 @@ import com.teosgame.ban.banapi.model.entity.AppealEntity;
 @Repository
 public interface BanAppealRepository extends PagingAndSortingRepository<AppealEntity, String> {
     public List<AppealEntity> findByTwitchUsernameIgnoreCase(String twitchUsername);
-    @Query(value = "select * from APPEALS a LEFT JOIN JUDGEMENT j on a.JUDGEMENT_ID = j.JUDGEMENT_ID " +
+    @Query(value = "select * from appeals a LEFT JOIN judgement j on a.JUDGEMENT_ID = j.JUDGEMENT_ID " +
             "where (:status is null or j.STATUS=:status) and (:type is null or a.BAN_TYPE=:type) and " +
             "(:username is null or a.TWITCH_USERNAME=:username) ORDER BY a.CREATED_AT", nativeQuery = true,
-            countQuery = "select COUNT(a.APPEAL_ID) from APPEALS a LEFT JOIN JUDGEMENT j on a.JUDGEMENT_ID = j.JUDGEMENT_ID " +
+            countQuery = "select COUNT(a.APPEAL_ID) from appeals a LEFT JOIN judgement j on a.JUDGEMENT_ID = j.JUDGEMENT_ID " +
             "where (:status is null or j.STATUS=:status) and (:type is null or a.BAN_TYPE=:type) and " +
             "(:username is null or a.TWITCH_USERNAME=:username)")
     public Page<AppealEntity> findByUsernameAndBanTypeAndJudgmentStatus(
@@ -28,15 +28,15 @@ public interface BanAppealRepository extends PagingAndSortingRepository<AppealEn
         @Param("status") String status,
         Pageable pageable);
 
-    @Query(value = "select COUNT(a.APPEAL_ID) from APPEALS a LEFT JOIN JUDGEMENT j on a.JUDGEMENT_ID = j.JUDGEMENT_ID " +
+    @Query(value = "select COUNT(a.APPEAL_ID) from appeals a LEFT JOIN judgement j on a.JUDGEMENT_ID = j.JUDGEMENT_ID " +
             "where a.TWITCH_USERNAME=:username AND j.STATUS in ('PENDING', 'REVIEWING')", nativeQuery = true)
     public int countPendingByUsername(@Param("username") String username);
 
     // For getting the next and previous pages
-    @Query(value = "select APPEAL_ID from APPEALS " +
+    @Query(value = "select APPEAL_ID from appeals " +
             "where CREATED_AT < :date LIMIT 1", nativeQuery = true)
     public Optional<String> findAppealIdBefore(Date date);
-    @Query(value = "select APPEAL_ID from APPEALS " +
+    @Query(value = "select APPEAL_ID from appeals " +
             "where CREATED_AT > :date LIMIT 1", nativeQuery = true)
     public Optional<String> findAppealIdAfter(Date date);
 }

@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.teosgame.ban.banapi.config.AWSConfig;
 import com.teosgame.ban.banapi.config.SecretsConfig;
 import com.teosgame.ban.banapi.exception.BadRequestException;
+import com.teosgame.ban.banapi.model.DBSecret;
 import com.teosgame.ban.banapi.model.TwitchSecret;
 
 import lombok.Getter;
@@ -34,21 +35,24 @@ public class SecretsManagerService {
 
     private String clientId;
     private String clientSecret;
+    private DBSecret dbSecret;
     private static ObjectMapper objectMapper = new ObjectMapper();
 
     Logger logger = LoggerFactory.getLogger(SecretsManagerService.class);
 
     @PostConstruct
     public void postConstruct() throws BadRequestException, JsonMappingException, JsonProcessingException {
-        String secretValue = getSecret();
+        String dbSecretString = getSecret(config.getDbSecret());
+        dbSecret = objectMapper.readValue(dbSecretString, DBSecret.class);
+
+        String twitchSecretString = getSecret(config.getTwitchSecret());
         objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.UPPER_SNAKE_CASE);
-        TwitchSecret secret = objectMapper.readValue(secretValue, TwitchSecret.class);
+        TwitchSecret secret = objectMapper.readValue(twitchSecretString, TwitchSecret.class);
         setClientId(secret.getTWITCH_CLIENT_ID());
         setClientSecret(secret.getTWITCH_CLIENT_SECRET());
     }
   
-    private String getSecret() throws BadRequestException {
-        String secretName = config.getSecretName();
+    public String getSecret(String secretName) throws BadRequestException {
         String region = awsConfig.getRegionName();
 
         // Create a Secrets Manager client
@@ -68,7 +72,7 @@ public class SecretsManagerService {
         try {
             getSecretValueResult = client.getSecretValue(getSecretValueRequest);
         } catch (Exception e) {
-            logger.error("Error initializing Twitch App Secrets: {}", e);
+            logger.error("Error initializing {} Secrets: {}", secretName, e);
             throw new BadRequestException(e.getLocalizedMessage());
         }
 

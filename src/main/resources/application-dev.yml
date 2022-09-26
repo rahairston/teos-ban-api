@@ -17,7 +17,7 @@ ban:
         redirect_uris: "http://localhost:3000"
         allowed_origins: "http://localhost:3000"
         redis:
-            host: localhost
+            host: 127.0.0.1
 
 cloud:
     aws:

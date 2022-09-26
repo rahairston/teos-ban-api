@@ -8,6 +8,9 @@ import lombok.Getter;
 @Configuration
 @Getter
 public class SecretsConfig {
-    @Value("${cloud.aws.secrets.secretName}")
-    private String secretName;
+    @Value("${cloud.aws.secrets.twitch}")
+    private String twitchSecret;
+
+    @Value("${cloud.aws.secrets.mysql}")
+    private String dbSecret;
 }

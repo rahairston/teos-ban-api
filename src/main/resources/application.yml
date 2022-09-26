@@ -1,6 +1,4 @@
 spring:
-    profiles:
-        active: dev
     cache:
         type: redis
         port: 6379
@@ -8,21 +6,13 @@ spring:
         redis:
             repositories:
                 type: none
-    jpa:
-      properties:
-        javax:
-          persistence:
-            schema-generation:
-              create-source: metadata
-              scripts:
-                action: create
-                create-target: create.sql
 
 cloud:
     aws:
         regionName: us-east-1
         secrets:
-          secretName: twitch/app
+          twitch: twitch/app
+          mysql: ban/mysql
         s3:
             fileBasePath: "v1/teosban/appeal/"
 
