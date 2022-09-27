@@ -5,8 +5,8 @@ spring:
 
 ban:
     teo:
-        redirect_uris: "http://localhost:3000"
-        allowed_origins: "http://localhost:3000"
+        redirect_uris: "https://teos-ban-appeals.com"
+        allowed_origins: "https://teos-ban-appeals.com"
         redis:
             host: redis
 
